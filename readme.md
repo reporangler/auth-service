@@ -1,4 +1,4 @@
-# Repo Rangler: Auth Service (Satis)
+# Repo Rangler: Auth Service
 
 This docker service will accept headers, authenticate, and return the user data
 
