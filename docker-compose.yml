@@ -1,0 +1,31 @@
+version: "3.4"
+
+networks:
+  auth_service:
+  repo_rangler_proxy:
+    external:
+      name: repo_rangler_proxy
+
+services:
+  auth_service_nginx:
+    container_name: reporangler_auth_service_nginx
+    image: reporangler/auth_service_nginx
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
+    networks:
+      - repo_rangler_proxy
+      - auth_service
+    environment:
+      - VIRTUAL_HOST=auth.reporangler.develop
+
+  auth_service_phpfpm:
+    container_name: reporangler_auth_service_phpfpm
+    image: reporangler/auth_service_phpfpm
+    build:
+      context: .
+      dockerfile: docker/phpfpm/Dockerfile
+    volumes:
+      - $PWD:/www
+    networks:
+      - auth_service
