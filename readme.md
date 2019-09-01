@@ -55,11 +55,33 @@ It should output
 
 # Usage
 
-There are no usage instructions yet
+Right now all the users are faked, but you can test the auth to return users by using the following curl commands.
+
+```
+curl -H 'Content-Type: application/json' -X POST -d '{"type":"http-basic", "username": "chris", "password": "thomas"}' http://auth.reporangler.develop/auth
+```
+
+should return (as long as the faked data is still unchanged):
+```
+{"id":1,"username":"chris","groups":["chris","companyA","companyB"]}
+```
+
+a non existence user will do this
+```
+curl -H 'Content-Type: application/json' -X POST -d '{"type":"http-basic", "username": "hello", "password": "thomas"}' http://auth.reporangler.develop/auth
+```
+
+and return:
+```
+{"message":"This user does not exist","code":404,"stack":[...stack dump if debug is enabled...]}
+```
+
+The php-service already uses this faked data to retrieve the logged in user and will send the data to the package 
+metadata-service to retrieve the list of packages
 
 # Future Ideas 
 
-I don't know
+- Support LDAP login
 
 # Notes
 
