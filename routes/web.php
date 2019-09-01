@@ -18,4 +18,7 @@ $router->group(['middleware' => ['cors']], function() use ($router) {
 
     // Healthcheck for any monitoring software
     $router->get('/healthz', 'Controller@healthz');
+
+    // Perform an authorization attempt
+    $router->post('/auth', 'Controller@auth');
 });
