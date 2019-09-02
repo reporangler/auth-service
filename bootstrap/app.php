@@ -22,8 +22,7 @@ $app = new Laravel\Lumen\Application(
 );
 
 $app->withFacades();
-
-// $app->withEloquent();
+$app->withEloquent();
 
 /*
 |--------------------------------------------------------------------------
@@ -86,6 +85,7 @@ $app->register(App\Providers\AppServiceProvider::class);
 */
 
 $app->configure('app');
+$app->configure('database');
 $app->configure('logging');
 
 $app->router->group([

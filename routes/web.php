@@ -12,13 +12,53 @@ use \Illuminate\Http\JsonResponse;
 |
 */
 
+// Healthcheck for any monitoring software
+$router->get('/healthz', 'DefaultController@healthz');
+
 $router->group(['middleware' => ['cors']], function() use ($router) {
     // Set the CORS options that we will allow web requests from (This doesn't affect composer/console clients)
-    $router->options('{path:.*}', 'Controller@cors');
+    $router->options('{path:.*}', 'DefaultController@cors');
 
-    // Healthcheck for any monitoring software
-    $router->get('/healthz', 'Controller@healthz');
+    $router->group(['prefix' => 'repository-type'], function() use ($router) {
+        $router->get('/{name:[a-z]+}',  'RepositoryTypeController@findByName');
+        $router->get('/{id:[0-9]+}',    'RepositoryTypeController@findById');
+        $router->get('/',               'RepositoryTypeController@getList');
+        $router->post('/',              'RepositoryTypeController@create');
+        $router->put('/',               'RepositoryTypeController@update');
+        $router->delete('/{id:[0-9]+}', 'RepositoryTypeController@deleteById');
+    });
 
-    // Perform an authorization attempt
-    $router->post('/auth', 'Controller@auth');
+    $router->group(['prefix' => 'package-group'], function() use ($router) {
+        $router->get('/{name:[a-z]+}',  'PackageGroupController@findByName');
+        $router->get('/{id:[0-9]+}',    'PackageGroupController@findById');
+        $router->get('/',               'PackageGroupController@getList');
+        $router->post('/',              'PackageGroupController@create');
+        $router->put('/',               'PackageGroupController@update');
+        $router->delete('/{id:[0-9]+}', 'PackageGroupController@deleteById');
+    });
+
+    $router->group(['prefix' => 'user'], function() use ($router) {
+        // Perform an authorization attempt
+        $router->post('/login',         'UserController@login');
+        $router->get('/check',          'UserController@check');
+        $router->get('/{name:[a-z]+}',  'UserController@findByName');
+        $router->get('/{id:[0-9]+}',    'UserController@findById');
+        $router->get('/',               'UserController@getList');
+        $router->post('/',              'UserController@create');
+        $router->put('/',               'UserController@update');
+        $router->delete('/{id:[0-9]+}', 'UserController@deleteById');
+    });
+
+    $router->group(['prefix' => 'user-package-group'], function() use ($router) {
+        $router->get('/user/{id:[0-9]+}',       'UserPackageGroupController@findByUserId');
+        $router->get('/group/{id:[0-9]+}',      'UserPackageGroupController@findByPackageGroupId');
+        $router->get('/',                       'UserPackageGroupController@getList');
+        $router->post('/',                      'UserPackageGroupController@create');
+        $router->delete(
+            '/user/{userId:[0-9]+}/group/{groupId:[0-9]+}',
+            'UserPackageGroupController@deleteMapping'
+        );
+        $router->delete('/user/{id:[0-9]+}',    'UserPackageGroupController@deleteByUserId');
+        $router->delete('/group/{id:[0-9]+}',   'UserPackageGroupController@deleteByPackageGroupId');
+    });
 });

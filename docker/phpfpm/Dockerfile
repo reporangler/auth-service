@@ -24,9 +24,9 @@ RUN set -xeu \
     && echo ${ALPINE_MIRROR}/v${ALPINE_VERSION}/main > /etc/apk/repositories \
     && echo ${ALPINE_MIRROR}/v${ALPINE_VERSION}/community >> /etc/apk/repositories \
     && apk add --no-cache git \
-	&& apk add --no-cache --virtual .build-deps ${PHPIZE_DEPS} icu-dev libzip-dev zlib-dev \
+	&& apk add --no-cache --virtual .build-deps ${PHPIZE_DEPS} icu-dev libzip-dev zlib-dev postgresql-dev \
 	&& docker-php-ext-configure zip --with-libzip \
-	&& docker-php-ext-install -j$(nproc) intl zip sockets pdo_mysql tokenizer mbstring \
+	&& docker-php-ext-install -j$(nproc) intl zip sockets pdo pdo_pgsql pgsql tokenizer mbstring \
 	&& pecl install apcu-${APCU_VERSION} \
 	&& pecl clear-cache \
 	&& pecl install xdebug-${XDEBUG_VERSION} \

@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Exception;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -47,12 +48,19 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
-        $code = $exception instanceof HttpException
-            ? $exception->getStatusCode()
-            : $exception->getCode();
+        $response = ['code' => 500];
 
-        //	Unrecognised exceptions with error code 0 get changed to 500
-        if(intval($code) <= 0) $code = 500;
+        switch(true){
+            case $exception instanceof HttpException:
+                $response['code'] = $exception->getStatusCode();
+                break;
+
+            case $exception instanceof QueryException:
+            case $exception instanceof \PDOException:
+                $response['code'] = 500;
+                $response['db-code'] = $exception->getCode();
+                break;
+        }
 
         $parentRender = parent::render($request, $exception);
 
@@ -66,13 +74,10 @@ class Handler extends ExceptionHandler
 
         if(empty($message)){
             $arr = explode('\\', get_class($exception));
-            $message = trim(implode(" ",preg_split('/(?=[A-Z])/',array_pop($arr))));
+            $response['message'] = trim(implode(" ",preg_split('/(?=[A-Z])/',array_pop($arr))));
+        }else{
+            $response['message'] = $message;
         }
-
-        $response = [
-            'message' => $message,
-            'code' => $code,
-        ];
 
         if(config('app.debug') == "true"){
             $response["stack"] = explode("\n",$exception->getTraceAsString());
@@ -80,6 +85,6 @@ class Handler extends ExceptionHandler
             $response["stack"] = "Disabled: Production Mode";
         }
 
-        return new JsonResponse($response, $code);
+        return new JsonResponse($response, $response['code']);
     }
 }

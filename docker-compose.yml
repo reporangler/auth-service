@@ -6,6 +6,9 @@ networks:
     external:
       name: repo_rangler_proxy
 
+volumes:
+  auth_service:
+
 services:
   auth_service_nginx:
     container_name: reporangler_auth_service_nginx
@@ -25,7 +28,21 @@ services:
     build:
       context: .
       dockerfile: docker/phpfpm/Dockerfile
-    volumes:
-      - $PWD:/www
     networks:
       - auth_service
+    volumes:
+      - $PWD:/www
+    env_file:
+      - $PWD/.env
+
+  auth_service_postgres:
+    container_name: reporangler_auth_service_postgres
+    image: postgres:alpine
+    ports:
+      - 5430:5432
+    networks:
+      - auth_service
+    volumes:
+      - auth_service:/var/lib/postgresql/data
+    env_file:
+      - $PWD/.env
