@@ -79,6 +79,79 @@ and return:
 The php-service already uses this faked data to retrieve the logged in user and will send the data to the package 
 metadata-service to retrieve the list of packages
 
+# REST Api
+
+There is a (TODO: not secured) REST Api which can be used to configure the authenticated users and what packages they can access.
+This REST Api is the same api that the command line client (TODO: not created yet) uses in order to do what it does.
+
+## /package-group
+
+These are the allowed groups that users can be assigned to. They define what groups of packages can be made. A typical set
+of package groups are:
+- public
+    - All users when created are given this group by default
+- custom-group
+    - This might be the name of a company department or some segmenting property. E.g. 'data-eng' or 'platform-eng'
+- username
+    - All users are given a group named after themselves, allowing them to publish private packages nobody else can see
+
+#### Endpoints:
+- get `/package-group`: list all registered package groups
+- get `/package-group/{name}`: get package group by name
+- get `/package-group/{id}`: get package group by id
+- post `/package-group`: create a new package group
+    - fields: [`name:string`]
+- put `/package-group`: update a package group
+    - fields: [`id:integer`, `name:string`]    
+- delete `/package-group/{id}`: delete a package by id
+
+### /user
+
+Users are required to know who can login, to what package repository they have access and defined what 
+package groups, when authorized they are allowed to read
+
+#### Endpoints:
+- post `/user/login`: attempt a login
+    - fields: [
+        `type:one_of(database,http-basic,ldap)`, 
+        `username:string`, 
+        `password:string`, 
+        `repository_type:string`
+    ]
+- get `/user/check`: check a token
+    - headers: [`TODO:i_dont_know_yet`]
+- get `/user`: get a list of all users
+- get `/user/{name}`: get a user by username
+- get `/user/{id}`: get a user by id
+- post `/user`: create a user
+    - fields: [
+        `username:string`,
+        `password:string`,
+        `repository_type:string`
+    ]
+- put `/user`: update a user
+    - fields: [
+        `id:integer`,
+        (optional)`username:string`,
+        (optional)`password:string`,
+        (optional)`repository_type:string`
+    ]
+- delete `/user/{id}`: delete a user by id
+
+### /user-package-group
+
+A user must be assigned package groups otherwise they can not read any package lists
+
+#### Endpoints:
+- get `/user-package-group/user/{id}`: list all mappings by user id
+- get `/user-package-group/group/{id}`: list all mappings by package group id
+- get `/user-package-group`: list all mappings
+- post `/user-package-group`: create a mapping between user and package group
+    - fields: [`user_id:integer`, `package_group_id:integer`]
+- delete `/user-package-group/user/{user_id}/group/{group_id}`: delete a specific mapping between a user and package_group
+- delete `/user-package-group/user/{id}`: delete all mappings for user id (removes a user out of all groups)
+- delete `/user-package-group/group/{id}`: delete all mappings from group id (removes a group from all users)
+
 # Future Ideas 
 
 - Support LDAP login
