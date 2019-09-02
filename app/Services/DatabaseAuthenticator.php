@@ -6,7 +6,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class DatabaseAuthenticator
 {
-    public function login(User $user, $password)
+    public function login(User $user, $password): User
     {
         if(!$user->checkPassword($password)){
             throw new UnauthorizedHttpException("Basic", "Unauthorized");

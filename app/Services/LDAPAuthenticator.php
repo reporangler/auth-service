@@ -5,7 +5,7 @@ use App\Model\User;
 
 class LDAPAuthenticator
 {
-    public function login(User $user, $password)
+    public function login(User $user, $password):User
     {
         throw new UnauthorizedHttpException("Basic", "Unauthorized");
     }
