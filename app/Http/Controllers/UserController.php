@@ -19,6 +19,7 @@ class UserController extends BaseController
             'type' => 'required|in:http-basic,database,ldap',
             'username' => 'required|string',
             'password' => 'required|string',
+            'repository_type' => 'required|string',
         ];
 
         $data = $this->validate($request,$authSchema);
@@ -27,7 +28,7 @@ class UserController extends BaseController
             case 'database':
             case 'http-basic':
                 $db = app(DatabaseAuthenticator::class);
-                return new JsonResponse($db->auth($data['username'], $data['password']), 200);
+                return new JsonResponse($db->auth($data['username'], $data['password'], $data['repository_type']), 200);
                 break;
 
             case 'ldap':
@@ -74,14 +75,11 @@ class UserController extends BaseController
 
         $data = $this->validate($request,$authSchema);
 
-        // The repository type must exist
-        $repositoryType = RepositoryType::where('name', $data['repository_type'])->firstOrFail();
-
         // Find a user with this same data
         $result = User::where([
             'username' => $data['username'],
             'password' => $data['password'],
-            'repository_type_id' => $repositoryType->id,
+            'repository_type' => $data['repository_type']
         ])->first();
 
         if(!empty($result)){
@@ -90,9 +88,9 @@ class UserController extends BaseController
 
         // Otherwise, create a new user
         $user = new User();
-        $user->username = $data['username'];
-        $user->password = sha1($data['password']);
-        $user->repository_type_id = $repositoryType->id;
+        $user->setUsername($data['username']);
+        $user->setPassword($data['password']);
+        $user->setRepositoryType($data['repository_type']);
         $user->save();
 
         return new JsonResponse($user, 200);
@@ -112,17 +110,15 @@ class UserController extends BaseController
         $user = User::findOrFail($data['id']);
 
         if(array_key_exists('repository_type', $data)){
-            // The repository type must exist
-            $repositoryType = RepositoryType::where('name', $data['repository_type'])->firstOrFail();
-            $user->repository_type_id = $repositoryType->id;
+            $user->setRepositoryType($data['repository_type']);
         }
 
         if(array_key_exists('username', $data)){
-            $user->username = $data['username'];
+            $user->setUsername($data['username']);
         }
 
         if(array_key_exists('password', $data)){
-            $user->password = sha1($data['password']);
+            $user->setPassword($data['password']);
         }
 
         $user->save();

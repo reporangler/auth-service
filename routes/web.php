@@ -19,15 +19,6 @@ $router->group(['middleware' => ['cors']], function() use ($router) {
     // Set the CORS options that we will allow web requests from (This doesn't affect composer/console clients)
     $router->options('{path:.*}', 'DefaultController@cors');
 
-    $router->group(['prefix' => 'repository-type'], function() use ($router) {
-        $router->get('/{name:[a-z]+}',  'RepositoryTypeController@findByName');
-        $router->get('/{id:[0-9]+}',    'RepositoryTypeController@findById');
-        $router->get('/',               'RepositoryTypeController@getList');
-        $router->post('/',              'RepositoryTypeController@create');
-        $router->put('/',               'RepositoryTypeController@update');
-        $router->delete('/{id:[0-9]+}', 'RepositoryTypeController@deleteById');
-    });
-
     $router->group(['prefix' => 'package-group'], function() use ($router) {
         $router->get('/{name:[a-z]+}',  'PackageGroupController@findByName');
         $router->get('/{id:[0-9]+}',    'PackageGroupController@findById');

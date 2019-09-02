@@ -17,9 +17,8 @@ class CreateUsersTable extends Migration
             $table->bigIncrements('id');
             $table->string('username');
             $table->string('password');
-            $table->integer('repository_type_id');
-            $table->foreign('repository_type_id')->references('id')->on('repository_types');
-            $table->unique(['username', 'repository_type_id']);
+            $table->string('repository_type');
+            $table->unique(['username', 'repository_type']);
             $table->timestamps();
         });
     }
