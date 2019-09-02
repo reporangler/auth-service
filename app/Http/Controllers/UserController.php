@@ -9,7 +9,9 @@ use App\Model\RepositoryType;
 use Illuminate\Http\Request;
 use Laravel\Lumen\Routing\Controller as BaseController;
 use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class UserController extends BaseController
 {
@@ -24,16 +26,21 @@ class UserController extends BaseController
 
         $data = $this->validate($request,$authSchema);
 
+        $user = User::where([
+            'username' => $data['username'],
+            'repository_type' => $data['repository_type'],
+        ])->firstOrFail();
+
         switch($data['type']){
             case 'database':
             case 'http-basic':
-                $db = app(DatabaseAuthenticator::class);
-                return new JsonResponse($db->auth($data['username'], $data['password'], $data['repository_type']), 200);
+                $auth = app(DatabaseAuthenticator::class);
+                return new JsonResponse($auth->login($user, $data['password']), 200);
                 break;
 
             case 'ldap':
                 $ldap = app(LDAPAuthenticator::class);
-                return new JsonResponse($ldap->auth($data['username'], $data['password']), 200);
+                return new JsonResponse($ldap->login($user, $data['password']), 200);
                 break;
         }
 

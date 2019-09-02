@@ -1,36 +1,16 @@
 <?php
 namespace App\Services;
 
+use App\Model\User;
+
 class LDAPAuthenticator
 {
-    public function auth($username, $password)
+    public function login(User $user, $password)
     {
-        switch($username){
-            case 'steve':
-                return [
-                    'id' => 3,
-                    'username' => $username,
-                    'groups' => [
-                        $username,
-                        'companyB',
-                        'companyC',
-                    ],
-                ];
-                break;
-
-            case 'paul':
-                return [
-                    'id' => 4,
-                    'username' => $username,
-                    'groups' => [
-                        $username,
-                        'companyC',
-                        'companyD',
-                    ]
-                ];
-                break;
+        if(!$user->checkPassword($password)){
+            throw new UnauthorizedHttpException("Basic", "Unauthorized");
         }
 
-        throw new NotFoundHttpException("This user does not exist");
+        return $user;
     }
 }

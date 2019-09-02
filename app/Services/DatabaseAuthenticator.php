@@ -1,38 +1,17 @@
 <?php
 namespace App\Services;
 
+use App\Model\User;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class DatabaseAuthenticator
 {
-    public function auth($username, $password)
+    public function login(User $user, $password)
     {
-        switch($username){
-            case "chris":
-                return [
-                    'id' => 1,
-                    'username' => $username,
-                    'groups' => [
-                        $username,
-                        'companyA',
-                        'companyB',
-                    ],
-                ];
-                break;
-
-            case 'alex':
-                return [
-                    'id' => 2,
-                    'username' => $username,
-                    'groups' => [
-                        $username,
-                        'companyA',
-                        'companyC',
-                    ]
-                ];
-                break;
+        if(!$user->checkPassword($password)){
+            throw new UnauthorizedHttpException("Basic", "Unauthorized");
         }
 
-        throw new NotFoundHttpException("This user does not exist");
+        return $user;
     }
 }
