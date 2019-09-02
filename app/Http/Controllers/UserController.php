@@ -16,7 +16,7 @@ class UserController extends BaseController
     public function login(Request $request)
     {
         $authSchema = [
-            'type' => 'required|in:http-basic,ldap',
+            'type' => 'required|in:http-basic,database,ldap',
             'username' => 'required|string',
             'password' => 'required|string',
         ];
@@ -24,6 +24,7 @@ class UserController extends BaseController
         $data = $this->validate($request,$authSchema);
 
         switch($data['type']){
+            case 'database':
             case 'http-basic':
                 $db = app(DatabaseAuthenticator::class);
                 return new JsonResponse($db->auth($data['username'], $data['password']), 200);
