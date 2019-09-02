@@ -58,7 +58,7 @@ It should output
 Right now all the users are faked, but you can test the auth to return users by using the following curl commands.
 
 ```
-curl -H 'Content-Type: application/json' -X POST -d '{"type":"http-basic", "username": "chris", "password": "thomas"}' http://auth.reporangler.develop/auth
+curl -H 'Content-Type: application/json' -X POST -d '{"type":"http-basic", "username": "chris", "password": "thomas"}' http://auth.reporangler.develop/user/login
 ```
 
 should return (as long as the faked data is still unchanged):
@@ -68,7 +68,7 @@ should return (as long as the faked data is still unchanged):
 
 a non existence user will do this
 ```
-curl -H 'Content-Type: application/json' -X POST -d '{"type":"http-basic", "username": "hello", "password": "thomas"}' http://auth.reporangler.develop/auth
+curl -H 'Content-Type: application/json' -X POST -d '{"type":"http-basic", "username": "hello", "password": "thomas"}' http://auth.reporangler.develop/user/login
 ```
 
 and return:
