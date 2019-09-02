@@ -4,9 +4,8 @@ namespace App\Model;
 use Illuminate\Database\Eloquent\Model;
 
 class User extends Model{
-    protected $hidden = [
-        'password'
-    ];
+    protected $hidden = ['password'];
+    protected $with = ['packageGroups'];
 
     public function setUsername(string $username): self
     {
@@ -42,5 +41,10 @@ class User extends Model{
     public function getRepositoryType(): string
     {
         return $this->repository_type;
+    }
+
+    public function packageGroups()
+    {
+        return $this->belongsToMany(PackageGroup::class,UserPackageGroup::class);
     }
 }

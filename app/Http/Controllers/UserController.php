@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Model\PackageGroup;
+use App\Model\UserPackageGroup;
 use App\Services\DatabaseAuthenticator;
 use App\Services\LDAPAuthenticator;
 use App\Model\User;
@@ -35,16 +37,21 @@ class UserController extends BaseController
             case 'database':
             case 'http-basic':
                 $auth = app(DatabaseAuthenticator::class);
-                return new JsonResponse($auth->login($user, $data['password']), 200);
+
+                $user = $auth->login($user, $data['password']);
                 break;
 
             case 'ldap':
                 $ldap = app(LDAPAuthenticator::class);
-                return new JsonResponse($ldap->login($user, $data['password']), 200);
+                $user = $ldap->login($user, $data['password']);
+                break;
+
+            default:
+                throw new BadRequestHttpException("No Authorization attempt made");
                 break;
         }
 
-        throw new BadRequestHttpException("No Authorization attempt made");
+        return new JsonResponse($user, 200);
     }
 
     public function check()
