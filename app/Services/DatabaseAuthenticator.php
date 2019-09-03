@@ -2,7 +2,7 @@
 namespace App\Services;
 
 use App\Model\User;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class DatabaseAuthenticator
 {
