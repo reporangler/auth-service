@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Model\PackageGroup;
+use App\Model\Token;
 use App\Model\UserPackageGroup;
 use App\Services\DatabaseAuthenticator;
 use App\Services\LDAPAuthenticator;
@@ -50,6 +51,16 @@ class UserController extends BaseController
                 throw new BadRequestHttpException("No Authorization attempt made");
                 break;
         }
+
+        $hours = config('app.token_life_hours');
+        $lifetime = new \DateInterval("PT{$hours}H");
+        $expireAt = new \DateTime();
+        $expireAt->add($lifetime);
+
+        $token = new Token($user, $expireAt);
+        $token->save();
+
+        $user->token = $token->token;
 
         return new JsonResponse($user, 200);
     }
