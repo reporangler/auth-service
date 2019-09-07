@@ -48,6 +48,14 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+        $parentRender = parent::render($request, $exception);
+
+        // if parent returns a JsonResponse
+        // for example in case of a ValidationException
+        if ($parentRender instanceof JsonResponse) {
+            return $parentRender;
+        }
+
         $response = ['code' => 500];
 
         switch(true){
@@ -55,19 +63,19 @@ class Handler extends ExceptionHandler
                 $response['code'] = $exception->getStatusCode();
                 break;
 
+            case $exception instanceof ModelNotFoundException:
+                $response['code'] = 404;
+                break;
+
             case $exception instanceof QueryException:
             case $exception instanceof \PDOException:
                 $response['code'] = 500;
                 $response['db-code'] = $exception->getCode();
                 break;
-        }
 
-        $parentRender = parent::render($request, $exception);
-
-        // if parent returns a JsonResponse
-        // for example in case of a ValidationException
-        if ($parentRender instanceof JsonResponse) {
-            return $parentRender;
+            default:
+                error_log(get_class($exception));
+                break;
         }
 
         $message = $exception->getMessage();

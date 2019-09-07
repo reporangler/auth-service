@@ -3,6 +3,7 @@ namespace App\Model;
 
 use Illuminate\Database\Eloquent\Model;
 
-class PackageGroup extends Model{
+class PackageGroup extends Model
+{
     protected $hidden = ['pivot'];
 }

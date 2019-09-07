@@ -48,7 +48,7 @@ class UserController extends BaseController
                 break;
 
             default:
-                throw new BadRequestHttpException("No Authorization attempt made");
+                throw new BadRequestHttpException('No Authorization attempt made');
                 break;
         }
 
@@ -57,7 +57,9 @@ class UserController extends BaseController
         $expireAt = new \DateTime();
         $expireAt->add($lifetime);
 
-        $token = new Token($user, $expireAt);
+        $token = new Token();
+        $token->user_id = $user->id;
+        $token->expire_at = $expireAt;
         $token->save();
 
         $user->token = $token->token;
@@ -65,24 +67,30 @@ class UserController extends BaseController
         return new JsonResponse($user, 200);
     }
 
-    public function check()
+    public function check(Request $request)
     {
-        return new JsonResponse([__METHOD__], 200);
+        $token = $request->headers->get('Authorization');
+        $token = str_replace('Bearer','', $token);
+        $token = trim($token);
+
+        $token = Token::with('user')->where(['token' => $token])->firstOrFail();
+
+        return new JsonResponse($token->user, 200);
     }
 
     public function findByUsername(string $username): JsonResponse
     {
-        return new JsonResponse(User::where('username', $username)->firstOrFail(),200);
+        return new JsonResponse(User::with('PackageGroups')->where('username', $username)->firstOrFail(),200);
     }
 
     public function findById(int $id): JsonResponse
     {
-        return new JsonResponse(User::findOrFail($id),200);
+        return new JsonResponse(User::with('PackageGroups')->findOrFail($id),200);
     }
 
     public function getList(): JsonResponse
     {
-        $list = User::all();
+        $list = User::with('PackageGroups')->get();
 
         return new JsonResponse([
             'count' => count($list),
@@ -108,7 +116,7 @@ class UserController extends BaseController
         ])->first();
 
         if(!empty($result)){
-            throw new UnprocessableEntityHttpException("User already exists");
+            throw new UnprocessableEntityHttpException('User already exists');
         }
 
         // Otherwise, create a new user
