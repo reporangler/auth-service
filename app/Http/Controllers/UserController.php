@@ -32,7 +32,7 @@ class UserController extends BaseController
         $user = User::where([
             'username' => $data['username'],
             'repository_type' => $data['repository_type'],
-        ])->firstOrFail();
+        ])->with('package_groups')->firstOrFail();
 
         switch($data['type']){
             case 'database':
