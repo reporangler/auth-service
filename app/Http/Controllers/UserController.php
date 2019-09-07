@@ -20,14 +20,14 @@ class UserController extends BaseController
 {
     public function login(Request $request)
     {
-        $authSchema = [
+        $schema = [
             'type' => 'required|in:http-basic,database,ldap',
             'username' => 'required|string',
             'password' => 'required|string',
             'repository_type' => 'required|string',
         ];
 
-        $data = $this->validate($request,$authSchema);
+        $data = $this->validate($request,$schema);
 
         $user = User::where([
             'username' => $data['username'],
@@ -100,13 +100,13 @@ class UserController extends BaseController
 
     public function create(Request $request): JsonResponse
     {
-        $authSchema = [
+        $schema = [
             'username' => 'required|string',
             'password' => 'required|string|min:8',
             'repository_type' => 'required|string'
         ];
 
-        $data = $this->validate($request,$authSchema);
+        $data = $this->validate($request,$schema);
 
         // Find a user with this same data
         $result = User::where([
