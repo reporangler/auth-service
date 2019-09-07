@@ -73,7 +73,7 @@ class UserController extends BaseController
         $token = str_replace('Bearer','', $token);
         $token = trim($token);
 
-        $token = Token::with('user.packagegroups')->where(['token' => $token])->firstOrFail();
+        $token = Token::with('user.package_groups')->where(['token' => $token])->firstOrFail();
 
         return new JsonResponse($token->user, 200);
     }

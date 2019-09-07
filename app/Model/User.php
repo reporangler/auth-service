@@ -43,7 +43,7 @@ class User extends Model
         return $this->repository_type;
     }
 
-    public function packageGroups()
+    public function package_groups()
     {
         return $this->belongsToMany(PackageGroup::class,UserPackageGroup::class);
     }
