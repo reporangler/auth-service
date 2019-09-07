@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Model\PackageGroup;
 use App\Model\Token;
+use App\Model\PackageGroup;
+use App\Model\User;
 use App\Model\UserPackageGroup;
+use App\Model\RepositoryType;
 use App\Services\DatabaseAuthenticator;
 use App\Services\LDAPAuthenticator;
-use App\Model\User;
-use App\Model\RepositoryType;
 use Illuminate\Http\Request;
-use Laravel\Lumen\Routing\Controller as BaseController;
 use Illuminate\Http\JsonResponse;
+use Laravel\Lumen\Routing\Controller as BaseController;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
@@ -80,17 +80,17 @@ class UserController extends BaseController
 
     public function findByUsername(string $username): JsonResponse
     {
-        return new JsonResponse(User::with('PackageGroups')->where('username', $username)->firstOrFail(),200);
+        return new JsonResponse(User::with('package_groups')->where('username', $username)->firstOrFail(),200);
     }
 
     public function findById(int $id): JsonResponse
     {
-        return new JsonResponse(User::with('PackageGroups')->findOrFail($id),200);
+        return new JsonResponse(User::with('package_groups')->findOrFail($id),200);
     }
 
     public function getList(): JsonResponse
     {
-        $list = User::with('PackageGroups')->get();
+        $list = User::with('package_groups')->get();
 
         return new JsonResponse([
             'count' => count($list),
