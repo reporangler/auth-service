@@ -119,7 +119,9 @@ package groups, when authorized they are allowed to read
         `repository_type:string`
     ]
 - get `/user/check`: check a token
-    - headers: [`TODO:i_dont_know_yet`]
+    - headers: [
+        `Authorization: Bearer {token}`
+    ]
 - get `/user`: get a list of all users
 - get `/user/{name}`: get a user by username
 - get `/user/{id}`: get a user by id
@@ -129,14 +131,19 @@ package groups, when authorized they are allowed to read
         `password:string`,
         `repository_type:string`
     ]
-- put `/user`: update a user
+- put `/user/{id}`: update a user by id
     - fields: [
-        `id:integer`,
         (optional)`username:string`,
         (optional)`password:string`,
         (optional)`repository_type:string`
     ]
 - delete `/user/{id}`: delete a user by id
+- post `/user/{id}/token`: create a service access token
+    - fields: [
+        `type:one_of(github)`,
+        `token:string`
+    ]
+- delete `/user/{userId}/token/{tokenId}`: delete a service token by id from a specific user
 
 ### /user-package-group
 

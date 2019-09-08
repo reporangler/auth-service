@@ -81,10 +81,9 @@ class UserController extends BaseController
      * @return JsonResponse
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function update(Request $request): JsonResponse
+    public function update(Request $request, int $id): JsonResponse
     {
         $schema = [
-            'id' => 'required|integer|min:1',
             'username' => 'string',
             'password' => 'string|min:8',
             'repository_type' => 'string'
@@ -92,7 +91,7 @@ class UserController extends BaseController
 
         $data = $this->validate($request,$schema);
 
-        $user = User::findOrFail($data['id']);
+        $user = User::findOrFail($id);
 
         if(array_key_exists('repository_type', $data)){
             $user->setRepositoryType($data['repository_type']);

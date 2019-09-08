@@ -16,14 +16,13 @@ class AccessTokenController extends BaseController
     public function add(Request $request, int $id)
     {
         $schema = [
-            'user_id' => 'required|integer',
             'type' => 'required|in:github',
             'token' => 'required|string',
         ];
 
         $data = $this->validate($request,$schema);
 
-        $user = User::find($data['user_id'])->firstOrFail();
+        $user = User::find($id)->firstOrFail();
 
         $token = new AccessToken();
         $token->user_id = $user->id;
