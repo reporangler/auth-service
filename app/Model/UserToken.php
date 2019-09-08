@@ -3,7 +3,7 @@ namespace App\Model;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Token extends Model
+class UserToken extends Model
 {
     public function __construct()
     {

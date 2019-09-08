@@ -45,6 +45,11 @@ class User extends Model
 
     public function package_groups()
     {
-        return $this->belongsToMany(PackageGroup::class,UserPackageGroup::class);
+        return $this->belongsToMany(PackageGroup::class, UserPackageGroup::class);
+    }
+
+    public function access_tokens()
+    {
+        return $this->hasMany(AccessToken::class);
     }
 }

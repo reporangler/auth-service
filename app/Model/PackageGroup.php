@@ -7,3 +7,4 @@ class PackageGroup extends Model
 {
     protected $hidden = ['pivot'];
 }
+

@@ -32,14 +32,21 @@ $router->group(['middleware' => ['cors']], function() use ($router) {
         $userRegEx = "[a-z0-9\-\_\@\.]+";
 
         // Perform an authorization attempt
-        $router->post('/login',             'UserController@login');
-        $router->get('/check',              'UserController@check');
-        $router->get("/{name:$userRegEx}",  'UserController@findByUsername');
-        $router->get('/{id:[0-9]+}',        'UserController@findById');
-        $router->get('/',                   'UserController@getList');
-        $router->post('/',                  'UserController@create');
-        $router->put('/',                   'UserController@update');
-        $router->delete('/{id:[0-9]+}',     'UserController@deleteById');
+        $router->post('/login',                 'LoginController@login');
+        $router->get('/check',                  'LoginController@check');
+
+        $router->get("/{name:$userRegEx}",      'UserController@findByUsername');
+        $router->get('/{id:[0-9]+}',            'UserController@findById');
+        $router->get('/',                       'UserController@getList');
+        $router->post('/',                      'UserController@create');
+        $router->put('/{id:[0-9]+}',            'UserController@update');
+        $router->delete('/{id:[0-9]+}',         'UserController@deleteById');
+
+        $router->post('/{id:[0-9]+}/token',     'AccessTokenController@add');
+        $router->delete(
+            '/{userId:[0-9]+}/token/{tokenId:[0-9]+}',
+            'AccessTokenController@remove'
+        );
     });
 
     $router->group(['prefix' => 'user-package-group'], function() use ($router) {
