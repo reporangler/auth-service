@@ -48,15 +48,10 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
-        $parentRender = parent::render($request, $exception);
-
-        // if parent returns a JsonResponse
-        // for example in case of a ValidationException
-        if ($parentRender instanceof JsonResponse) {
-            return $parentRender;
-        }
-
-        $response = ['code' => 500];
+        $response = [
+            'code' => 500,
+            'exception' => get_class($exception),
+        ];
 
         switch(true){
             case $exception instanceof HttpException:
