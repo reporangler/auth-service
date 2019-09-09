@@ -57,7 +57,8 @@ $app->singleton(
 */
 
 $app->routeMiddleware([
-    'cors' => App\Http\Middleware\Cors::class,
+    'cors'  => App\Http\Middleware\Cors::class,
+    'auth'  => App\Http\Middleware\Authenticate::class,
 ]);
 
 /*
@@ -72,6 +73,7 @@ $app->routeMiddleware([
 */
 
 $app->register(App\Providers\AppServiceProvider::class);
+$app->register(App\Providers\AuthServiceProvider::class);
 
 /*
 |--------------------------------------------------------------------------
@@ -84,6 +86,7 @@ $app->register(App\Providers\AppServiceProvider::class);
 |
 */
 
+$app->configure('auth');
 $app->configure('app');
 $app->configure('database');
 $app->configure('logging');

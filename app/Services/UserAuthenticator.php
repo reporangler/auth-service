@@ -1,24 +1,15 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Services;
 
 use App\Model\User;
 use App\Model\UserToken;
-use App\Services\DatabaseAuthenticator;
-use App\Services\LDAPAuthenticator;
 use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
-use Laravel\Lumen\Routing\Controller as BaseController;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Illuminate\Support\Facades\Validator;
 
-class LoginController extends BaseController
+class UserAuthenticator
 {
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     * @throws \Illuminate\Validation\ValidationException
-     */
-    public function login(Request $request)
+    public function loginRepoUser(Request $request)
     {
         $schema = [
             'type' => 'required|in:http-basic,database,ldap',
@@ -27,7 +18,7 @@ class LoginController extends BaseController
             'repository_type' => 'required|string',
         ];
 
-        $data = $this->validate($request,$schema);
+        $data = Validator::make($request->all(),$schema)->validate();
 
         $user = User::where([
             'username' => $data['username'],
@@ -67,14 +58,15 @@ class LoginController extends BaseController
 
         $user->token = $token->token;
 
-        return new JsonResponse($user, 200);
+        return $user;
     }
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function check(Request $request)
+    public function loginApiUser(Request $request)
+    {
+        return false;
+    }
+
+    public function checkToken(Request $request)
     {
         $token = $request->headers->get('Authorization');
         $token = str_replace('Bearer','', $token);
@@ -85,6 +77,6 @@ class LoginController extends BaseController
             'user.access_tokens'
         ])->where(['token' => $token])->firstOrFail();
 
-        return new JsonResponse($token->user, 200);
+        return $token->user;
     }
 }
