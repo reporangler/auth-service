@@ -3,9 +3,12 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Auth\Factory as Auth;
 use Illuminate\Http\Request;
 use Illuminate\Auth\RequestGuard;
+use Illuminate\Validation\UnauthorizedException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class Authenticate
 {
@@ -38,7 +41,7 @@ class Authenticate
     public function handle(Request $request, Closure $next, $guard = null)
     {
         if(!$this->auth->guard($guard)->user()){
-            throw new \Exception("No user could be created, not even a public user");
+            throw new UnauthorizedHttpException("No user could be found");
         }
 
         return $next($request);

@@ -9,41 +9,28 @@ use Illuminate\Support\Facades\Validator;
 
 class UserAuthenticator
 {
-    public function loginRepoUser(Request $request)
+    public function loginRepoUser(string $type, string $username, string $password, string $repoType): User
     {
-        $schema = [
-            'type' => 'required|in:http-basic,database,ldap',
-            'username' => 'required|string',
-            'password' => 'required|string',
-            'repository_type' => 'required|string',
-        ];
-
-        $data = Validator::make($request->all(),$schema)->validate();
+        if($repoType === 'http-basic'){
+            $repoType = 'database';
+        }
 
         $user = User::where([
-            'username' => $data['username'],
-            'repository_type' => $data['repository_type'],
+            'username' => $username,
+            'repository_type' => $repoType,
         ])->with([
             'package_groups',
             'access_tokens',
         ])->firstOrFail();
 
-        switch($data['type']){
-            case 'database':
-            case 'http-basic':
-                $auth = app(DatabaseAuthenticator::class);
-
-                $user = $auth->login($user, $data['password']);
-                break;
-
-            case 'ldap':
-                $ldap = app(LDAPAuthenticator::class);
-                $user = $ldap->login($user, $data['password']);
-                break;
-
-            default:
-                throw new BadRequestHttpException('No Authorization attempt made');
-                break;
+        if($repoType === 'database'){
+            $auth = app(DatabaseAuthenticator::class);
+            $user = $auth->login($user, $password);
+        }else if($repoType === 'ldap') {
+            $auth = app(LDAPAuthenticator::class);
+            $user = $auth->login($user, $password);
+        }else{
+            throw new BadRequestHttpException('No Authorization attempt made');
         }
 
         $hours = config('app.token_life_hours');
@@ -66,9 +53,8 @@ class UserAuthenticator
         return false;
     }
 
-    public function checkToken(Request $request)
+    public function checkToken(string $token): User
     {
-        $token = $request->headers->get('Authorization');
         $token = str_replace('Bearer','', $token);
         $token = trim($token);
 
