@@ -2,8 +2,8 @@
 
 return [
     'guards' => [
-        'api'   => ['driver' => 'api'],
+        'login'  => ['driver' => 'login'],
         'token' => ['driver' => 'token'],
-        'repo'  => ['driver' => 'repo'],
+        'api'   => ['driver' => 'api'],
     ]
 ];

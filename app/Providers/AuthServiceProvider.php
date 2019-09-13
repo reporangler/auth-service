@@ -2,11 +2,11 @@
 
 namespace App\Providers;
 
+use App\Model\User;
 use App\Services\UserAuthenticator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Validation\Validator;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -26,43 +26,33 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        Auth::viaRequest('api', function (Request $request) {
-            $userService = app(UserAuthenticator::class);
-
-            return $userService->loginApiUser($request);
-        });
-
-        Auth::viaRequest('token', function (Request $request) {
-            $userService = app(UserAuthenticator::class);
-
-            $validator = Validator::make($request->headers->all(), [
-                'Authorization' => 'required|string'
-            ]);
-
-            $data = $validator->validate();
-
-            return $userService->checkToken($data['Authorization']);
-        });
-
-        Auth::viaRequest('repo', function (Request $request) {
+        Auth::viaRequest('login', function (Request $request) {
             /** @var UserAuthenticator $userService */
             $userService = app(UserAuthenticator::class);
 
-            $validator = Validator::make($request->headers->all(), [
-                'reporangler-login-type' => 'required|in:http-basic,database,ldap',
-                'reporangler-login-username' => 'required|string',
-                'reporangler-login-password' => 'required|string',
-                'reporangler-login-repository-type' => 'required|string',
-            ]);
-
-            $data = $validator->validate();
+            $valid = $userService->validateLoginRequest($request);
 
             return $userService->loginRepoUser(
-                $data['reporangler-login-type'],
-                $data['reporangler-login-username'],
-                $data['reporangler-login-password'],
-                $data['reporangler-login-repository-type']
+                $valid['reporangler-login-type'],
+                $valid['reporangler-login-username'],
+                $valid['reporangler-login-password'],
+                $valid['reporangler-login-repository-type']
             );
+        });
+
+        Auth::viaRequest('token', function (Request $request) {
+            /** @var UserAuthenticator $userService */
+            $userService = app(UserAuthenticator::class);
+
+            $token = $userService->validateTokenRequest($request);
+
+            return $userService->checkToken($token);
+        });
+
+        Auth::viaRequest('api', function (Request $request) {
+            // THIS SHOULD BE CHANGED TO ONLY CHECKING THE TOKEN + API CAPABILITY
+            error_log("api request");
+            return false;
         });
     }
 }

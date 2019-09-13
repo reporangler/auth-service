@@ -22,9 +22,9 @@ $router->group(['middleware' => ['cors']], function() use ($router) {
     // Set the CORS options that we will allow web requests from (This doesn't affect composer/console clients)
     $router->options('{path:.*}', 'DefaultController@cors');
 
-    $router->group(['prefix' => 'user'], function() use ($router) {
-        $router->post('/login', ['middleware' => 'auth:repo', function(Request $request) {
-            return new JsonResponse($request->user('repo'), 200);
+    $router->group(['prefix' => 'login'], function() use ($router) {
+        $router->get('/user', ['middleware' => 'auth:login', function(Request $request) {
+            return new JsonResponse($request->user('login'), 200);
         }]);
 
         $router->get('/check', ['middleware' => 'auth:token', function(Request $request) {
