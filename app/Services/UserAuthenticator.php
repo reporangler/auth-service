@@ -25,13 +25,17 @@ class UserAuthenticator
         $headers = $this->flattenHeaders($request->headers->all());
 
         $validator = Validator::make($headers, [
-            'reporangler-login-type' => 'required|in:http-basic,database,ldap',
+            'reporangler-login-type' => 'in:http-basic,database,ldap',
             'reporangler-login-username' => 'required|string',
             'reporangler-login-password' => 'required|string',
             'reporangler-login-repository-type' => 'string',
         ]);
 
         $data = $validator->validate();
+
+        if(!array_key_exists('reporangler-login-type', $headers)){
+            $headers['reporangler-login-type'] = 'database';
+        }
 
         if(!array_key_exists('reporangler-login-repository-type', $data)){
             $data['reporangler-login-repository-type'] = null;
