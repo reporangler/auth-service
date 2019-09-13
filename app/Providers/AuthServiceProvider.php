@@ -50,8 +50,12 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         Auth::viaRequest('api', function (Request $request) {
-            // THIS SHOULD BE CHANGED TO ONLY CHECKING THE TOKEN + API CAPABILITY
-            error_log("api request");
+            /** @var User $user */
+            $user = $request->user('token');
+
+            // We should change this to use capabilities in the future
+            if($user->username === 'admin') return $user;
+
             return false;
         });
     }

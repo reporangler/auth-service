@@ -32,7 +32,7 @@ $router->group(['middleware' => ['cors']], function() use ($router) {
         }]);
     });
 
-    $router->group(['middleware' => 'auth:api'], function() use ($router){
+    $router->group(['middleware' => ['auth:token', 'auth:api']], function() use ($router){
         $router->group(['prefix' => 'package-group'], function() use ($router) {
             $router->get('/{name:[a-z]+}',  'PackageGroupController@findByName');
             $router->get('/{id:[0-9]+}',    'PackageGroupController@findById');
