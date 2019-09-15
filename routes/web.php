@@ -24,11 +24,11 @@ $router->group(['middleware' => ['cors']], function() use ($router) {
 
     $router->group(['prefix' => 'login'], function() use ($router) {
         $router->get('/user', ['middleware' => 'auth:login', function(Request $request) {
-            return new JsonResponse($request->user('login'), 200);
+            return new JsonResponse($request->user('login'));
         }]);
 
         $router->get('/check', ['middleware' => 'auth:token', function(Request $request) {
-            return new JsonResponse($request->user('token'), 200);
+            return new JsonResponse($request->user('token'));
         }]);
     });
 

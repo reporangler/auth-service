@@ -32,7 +32,7 @@ class AuthServiceProvider extends ServiceProvider
 
             $valid = $userService->validateLoginRequest($request);
 
-            return $userService->loginRepoUser(
+            return $userService->login(
                 $valid['reporangler-login-type'],
                 $valid['reporangler-login-username'],
                 $valid['reporangler-login-password'],
