@@ -2,6 +2,8 @@
 
 use Illuminate\Database\Seeder;
 
+//die(file_get_contents(__DIR__."/InitialAdminUser.php"));
+
 class DatabaseSeeder extends Seeder
 {
     /**
@@ -12,8 +14,8 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $this->call([
-            AdminUserSeeder::class,
             InitialUserCapabilities::class,
+            InitialAdminUser::class,
         ]);
     }
 }
