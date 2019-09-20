@@ -19,7 +19,7 @@ class UserCapabilityMap extends Migration
             $table->foreign('capability_id')->references('id')->on('user_capability');
             $table->integer('user_id');
             $table->foreign('user_id')->references('id')->on('users');
-            $table->jsonb('constraint');
+            $table->jsonb('constraint')->nullable();
             $table->unique(['capability_id', 'user_id', 'constraint']);
             $table->timestamps();
         });
