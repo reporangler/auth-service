@@ -36,6 +36,8 @@ class UserPackageGroupController extends BaseController
 
     public function create(Request $request): JsonResponse
     {
+        $request->user()->can('user-package-group-create-mapping');
+
         $authSchema = [
             'user_id' => 'required|int|min:1',
             'package_group_id' => 'required|int|min:1',
@@ -62,6 +64,8 @@ class UserPackageGroupController extends BaseController
 
     public function deleteMapping(int $userId, int $groupId): JsonResponse
     {
+        $request->user()->can('user-package-group-delete-mapping');
+
         $userPackageGroup = UserPackageGroup::where([
             'user_id' => $userId,
             'package_group_id' => $groupId,
@@ -79,6 +83,8 @@ class UserPackageGroupController extends BaseController
 
     public function deleteByUserId(int $id): JsonResponse
     {
+        $request->user()->can('user-package-group-delete-mapping');
+
         $userPackageGroup = UserPackageGroup::where('user_id', $id);
 
         $deleted = [];
@@ -93,6 +99,8 @@ class UserPackageGroupController extends BaseController
 
     public function deleteByPackageGroupId(int $id): JsonResponse
     {
+        $request->user()->can('user-package-group-delete-mapping');
+
         $userPackageGroup = UserPackageGroup::where('package_group_id', $id);
 
         $deleted = [];

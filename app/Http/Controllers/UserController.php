@@ -47,6 +47,8 @@ class UserController extends BaseController
      */
     public function create(Request $request): JsonResponse
     {
+        $request->user()->can('user-create');
+
         $schema = [
             'username' => 'required|string',
             'password' => 'required|string|min:8',
@@ -83,6 +85,8 @@ class UserController extends BaseController
      */
     public function update(Request $request, int $id): JsonResponse
     {
+        $request->user()->can('user-update');
+
         $schema = [
             'username' => 'string',
             'password' => 'string|min:8',
@@ -116,6 +120,8 @@ class UserController extends BaseController
      */
     public function deleteById(int $id): JsonResponse
     {
+        $request->user()->can('user-delete');
+
         $user = User::findOrFail($id);
 
         $deleted[] = $user->toArray();

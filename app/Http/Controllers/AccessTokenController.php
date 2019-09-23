@@ -15,6 +15,8 @@ class AccessTokenController extends BaseController
 {
     public function add(Request $request, int $id)
     {
+        $request->user()->can('user-add-token');
+
         $schema = [
             'type' => 'required|in:github',
             'token' => 'required|string',
@@ -35,6 +37,8 @@ class AccessTokenController extends BaseController
 
     public function remove(int $userId, int $tokenId)
     {
+        $request->user()->can('user-del-token');
+
         $accessToken = AccessToken::where([
             'id' => $tokenId,
             'user_id' => $userId,

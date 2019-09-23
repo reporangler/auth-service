@@ -36,6 +36,8 @@ class PackageGroupController extends BaseController
 
     public function create(Request $request): JsonResponse
     {
+        $request->user()->can('package-group-create');
+
         $authSchema = [
             'name' => 'required|string',
         ];
@@ -57,6 +59,8 @@ class PackageGroupController extends BaseController
 
     public function update(Request $request): JsonResponse
     {
+        $request->user()->can('package-group-update');
+
         $authSchema = [
             'id' => 'required|integer|min:1',
             'name' => 'required|string',
@@ -73,6 +77,8 @@ class PackageGroupController extends BaseController
 
     public function deleteById(int $id): JsonResponse
     {
+        $request->user()->can('package-group-delete');
+
         $packageGroup = PackageGroup::findOrFail($id);
 
         $deleted[] = $packageGroup->toArray();

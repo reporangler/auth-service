@@ -57,5 +57,18 @@ class AuthServiceProvider extends ServiceProvider
 
             return $userService->checkToken($token);
         });
+
+        Gate::define('user-create',         'App\Policies\UserPolicy@createUser');
+        Gate::define('user-update',         'App\Policies\UserPolicy@updateUser');
+        Gate::define('user-delete',         'App\Policies\UserPolicy@deleteUser');
+        Gate::define('user-add-token',      'App\Policies\UserPolicy@addToken');
+        Gate::define('user-remove-token',   'App\Policies\UserPolicy@removeToken');
+
+        Gate::define('package-group-create', 'App\Policies\PackageGroupPolicy@createPackageGroup');
+        Gate::define('package-group-update', 'App\Policies\PackageGroupPolicy@updatePackageGroup');
+        Gate::define('package-group-delete', 'App\Policies\PackageGroupPolicy@deletePackageGroup');
+
+        Gate::define('user-package-group-create-mapping', 'App\Policies\UserPackageGroupPolicy@createMapping');
+        Gate::define('user-package-group-remove-mapping', 'App\Policies\UserPackageGroupPolicy@removeMapping');
     }
 }
