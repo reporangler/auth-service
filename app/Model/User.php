@@ -1,23 +1,15 @@
 <?php
 namespace App\Model;
 
-use Illuminate\Database\Eloquent\Model;
+use RepoRangler\Entity\PublicUser;
 
-class User extends Model
+class User extends PublicUser
 {
+    protected $table = 'user';
+
     protected $hidden = ['password'];
 
-    public function setUsername(string $username): self
-    {
-        $this->username = $username;
-
-        return $this;
-    }
-
-    public function getUsername(): string
-    {
-        return $this->username;
-    }
+    protected $appends = ['is_admin_user', 'is_rest_user'];
 
     public function setPassword(string $password): self
     {
@@ -31,18 +23,6 @@ class User extends Model
         return password_verify($password, $this->password);
     }
 
-    public function setRepositoryType(string $repository_type): self
-    {
-        $this->repository_type = $repository_type;
-
-        return $this;
-    }
-
-    public function getRepositoryType(): string
-    {
-        return $this->repository_type;
-    }
-
     public function package_groups()
     {
         return $this->belongsToMany(PackageGroup::class, UserPackageGroup::class);
@@ -51,5 +31,10 @@ class User extends Model
     public function access_tokens()
     {
         return $this->hasMany(AccessToken::class);
+    }
+
+    public function capability()
+    {
+        return $this->hasMany(UserCapability::class);
     }
 }

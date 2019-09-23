@@ -20,7 +20,7 @@ class UserAuthenticator
         return $headers;
     }
 
-    public function validateLoginRequest(Request $request)
+    public function validateLoginHeaders(Request $request)
     {
         $headers = $this->flattenHeaders($request->headers->all());
 
@@ -70,24 +70,16 @@ class UserAuthenticator
         return $data['authorization'];
     }
 
-    public function login(string $type, string $username, string $password, ?string $repoType): User
+    public function login(string $type, string $username, string $password): User
     {
-        $user = User::where([
-            'username' => $username,
-            'repository_type' => $repoType,
-        ])->with([
-            'package_groups',
-            'access_tokens',
-        ])->firstOrFail();
-
         if($type === 'database'){
             $auth = app(DatabaseAuthenticator::class);
-            $user = $auth->login($user, $password);
+            $user = $auth->login($username, $password);
         }else if($type === 'ldap') {
             $auth = app(LDAPAuthenticator::class);
-            $user = $auth->login($user, $password);
+            $user = $auth->login($username, $password);
         }else{
-            throw new BadRequestHttpException('No Authorization attempt made');
+            abort(400, 'No Authorization attempt made');
         }
 
         $hours = config('app.token_life_hours');
@@ -105,7 +97,7 @@ class UserAuthenticator
         return $user;
     }
 
-    public function loginApiUser(Request $request)
+    public function loginRepoUser(Request $request)
     {
         return false;
     }
@@ -117,7 +109,7 @@ class UserAuthenticator
 
         $token = UserToken::with([
             'user.package_groups',
-            'user.access_tokens'
+            'user.access_tokens',
         ])->where(['token' => $token])->firstOrFail();
 
         return $token->user;

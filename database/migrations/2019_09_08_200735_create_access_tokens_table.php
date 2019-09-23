@@ -16,7 +16,7 @@ class CreateAccessTokensTable extends Migration
         Schema::create('access_tokens', function(Blueprint $table){
             $table->bigIncrements('id');
             $table->integer('user_id');
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('user_id')->references('id')->on('user');
             $table->string('type');
             $table->string('token');
             $table->unique(['user_id', 'type']);

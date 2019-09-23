@@ -17,7 +17,7 @@ class CreateTokensTable extends Migration
             $table->bigIncrements('id');
             $table->string('token');
             $table->integer('user_id');
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('user_id')->references('id')->on('user');
             $table->timestamps();
             $table->datetime('expire_at');
         });

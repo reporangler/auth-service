@@ -18,7 +18,7 @@ class CreateUserPackageGroupsTable extends Migration
             $table->integer('user_id');
             $table->integer('package_group_id');
             $table->unique(['user_id', 'package_group_id']);
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('user_id')->references('id')->on('user');
             $table->foreign('package_group_id')->references('id')->on('package_groups');
             $table->timestamps();
         });

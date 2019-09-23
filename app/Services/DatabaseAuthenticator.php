@@ -2,14 +2,23 @@
 namespace App\Services;
 
 use App\Model\User;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class DatabaseAuthenticator
 {
-    public function login(User $user, $password): User
+    private function getUserBy(array $condition): User
     {
+        return User::where($condition)->with([
+            'package_groups',
+            'access_tokens',
+        ])->firstOrFail();
+    }
+
+    public function login(string $username, string $password): User
+    {
+        $user = $this->getUserBy(['username' => $username]);
+
         if(!$user->checkPassword($password)){
-            throw new UnauthorizedHttpException("Basic", "Unauthorized");
+            abort(401, 'Unauthorized');
         }
 
         return $user;

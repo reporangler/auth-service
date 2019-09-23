@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class UserCapability extends Migration
+class CreateUserTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,12 @@ class UserCapability extends Migration
      */
     public function up()
     {
-        Schema::create('user_capability', function (Blueprint $table) {
+        Schema::create('user', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('name')->unique();
+            $table->string('username');
+            $table->string('password');
+            $table->string('repository_type');
+            $table->unique(['username', 'repository_type']);
             $table->timestamps();
         });
     }
@@ -27,6 +30,6 @@ class UserCapability extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_capability');
+        Schema::dropIfExists('user');
     }
 }
