@@ -14,14 +14,14 @@ class InitialAdminUser extends Seeder
      */
     public function run()
     {
-        $user = new User();
-        $user->setPassword(env('APP_ADMIN_DEFAULT_PASSWORD'));
+        $user               = new User();
+        $user->password     = env('APP_ADMIN_DEFAULT_PASSWORD');
 
         $id = DB::table('user')->insertGetId([
-            'username' => 'admin',
-            'email' => env('APP_ADMIN_DEFAULT_EMAIL'),
-            'password' => $user->password,
-            'created_at' => 'NOW()',
+            'username'      => env('APP_ADMIN_DEFAULT_USERNAME'),
+            'email'         => env('APP_ADMIN_DEFAULT_EMAIL'),
+            'password'      => $user->password,
+            'created_at'    => 'NOW()',
         ]);
 
         self::setCapability($id, UserCapability::IS_ADMIN_USER);
