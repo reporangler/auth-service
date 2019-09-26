@@ -15,7 +15,7 @@ class UserController extends BaseController
      */
     public function findByUsername(string $username): JsonResponse
     {
-        return new JsonResponse(User::with('package_groups')->where('username', $username)->firstOrFail(),200);
+        return new JsonResponse(User::where('username', $username)->firstOrFail(),200);
     }
 
     /**
@@ -24,7 +24,7 @@ class UserController extends BaseController
      */
     public function findById(int $id): JsonResponse
     {
-        return new JsonResponse(User::with('package_groups')->findOrFail($id),200);
+        return new JsonResponse(User::findOrFail($id),200);
     }
 
     /**
@@ -32,7 +32,7 @@ class UserController extends BaseController
      */
     public function getList(): JsonResponse
     {
-        $list = User::with('package_groups')->get();
+        $list = User::get();
 
         return new JsonResponse([
             'count' => count($list),
@@ -51,8 +51,7 @@ class UserController extends BaseController
 
         $schema = [
             'username' => 'required|string',
-            'password' => 'required|string|min:8',
-            'repository_type' => 'required|string'
+            'password' => 'required|string|min:8'
         ];
 
         $data = $this->validate($request,$schema);
@@ -60,8 +59,7 @@ class UserController extends BaseController
         // Find a user with this same data
         $result = User::where([
             'username' => $data['username'],
-            'password' => $data['password'],
-            'repository_type' => $data['repository_type']
+            'password' => $data['password']
         ])->first();
 
         if(!empty($result)){
@@ -72,7 +70,6 @@ class UserController extends BaseController
         $user = new User();
         $user->setUsername($data['username']);
         $user->setPassword($data['password']);
-        $user->setRepositoryType($data['repository_type']);
         $user->save();
 
         return new JsonResponse($user, 200);
@@ -89,17 +86,12 @@ class UserController extends BaseController
 
         $schema = [
             'username' => 'string',
-            'password' => 'string|min:8',
-            'repository_type' => 'string'
+            'password' => 'string|min:8'
         ];
 
         $data = $this->validate($request,$schema);
 
         $user = User::findOrFail($id);
-
-        if(array_key_exists('repository_type', $data)){
-            $user->setRepositoryType($data['repository_type']);
-        }
 
         if(array_key_exists('username', $data)){
             $user->setUsername($data['username']);
