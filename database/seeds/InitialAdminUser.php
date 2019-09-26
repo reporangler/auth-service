@@ -1,9 +1,9 @@
 <?php
 
 use App\Model\User;
+use App\Model\UserCapability;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use RepoRangler\Interfaces\UserCapabilityInterface;
 
 class InitialAdminUser extends Seeder
 {
@@ -23,8 +23,8 @@ class InitialAdminUser extends Seeder
             'created_at' => 'NOW()',
         ]);
 
-        self::setCapability($id, UserCapabilityInterface::IS_ADMIN_USER);
-        self::setCapability($id, UserCapabilityInterface::IS_REST_USER);
+        self::setCapability($id, UserCapability::IS_ADMIN_USER);
+        self::setCapability($id, UserCapability::IS_REST_USER);
     }
 
     static public function setCapability($userId, $capabilityName)
