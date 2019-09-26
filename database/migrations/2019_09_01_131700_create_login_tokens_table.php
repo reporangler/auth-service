@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateUserPackageGroupsTable extends Migration
+class CreateLoginTokensTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,13 @@ class CreateUserPackageGroupsTable extends Migration
      */
     public function up()
     {
-        Schema::create('user_package_groups', function(Blueprint $table){
+        Schema::create('login_tokens', function(Blueprint $table){
             $table->bigIncrements('id');
+            $table->string('token');
             $table->integer('user_id');
-            $table->integer('package_group_id');
-            $table->unique(['user_id', 'package_group_id']);
             $table->foreign('user_id')->references('id')->on('user');
-            $table->foreign('package_group_id')->references('id')->on('package_groups');
             $table->timestamps();
+            $table->datetime('expire_at');
         });
     }
 
@@ -31,6 +30,6 @@ class CreateUserPackageGroupsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_package_groups');
+        Schema::dropIfExists('login_tokens');
     }
 }
