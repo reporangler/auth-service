@@ -117,10 +117,11 @@ class UserAuthenticator
         $token = str_replace('Bearer','', $token);
         $token = trim($token);
 
-        $token = UserToken::with([
-            'user.package_groups',
-            'user.access_tokens',
-        ])->where(['token' => $token])->firstOrFail();
+        $token = LoginToken::with([
+            'user.access_tokens'
+        ])->where([
+            'token' => $token
+        ])->firstOrFail();
 
         return $token->user;
     }
