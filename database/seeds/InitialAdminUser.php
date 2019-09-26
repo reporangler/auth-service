@@ -15,10 +15,11 @@ class InitialAdminUser extends Seeder
     public function run()
     {
         $user = new User();
-        $user->setPassword(env('APP_ADMIN_DEFAULT_PASSWORD', 'admin'));
+        $user->setPassword(env('APP_ADMIN_DEFAULT_PASSWORD'));
 
         $id = DB::table('user')->insertGetId([
             'username' => 'admin',
+            'email' => env('APP_ADMIN_DEFAULT_EMAIL'),
             'password' => $user->password,
             'created_at' => 'NOW()',
         ]);
