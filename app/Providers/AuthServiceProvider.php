@@ -6,6 +6,7 @@ use App\Model\User;
 use App\Services\UserAuthenticator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use RepoRangler\Entity\AdminUser;
 use RepoRangler\Entity\RestUser;
