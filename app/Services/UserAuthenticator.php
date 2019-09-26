@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Model\User;
-use App\Model\UserToken;
+use App\Model\LoginToken;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
@@ -96,9 +96,10 @@ class UserAuthenticator
         $expireAt = new \DateTime();
         $expireAt->add($lifetime);
 
-        $token = new UserToken();
-        $token->user_id = $user->id;
-        $token->expire_at = $expireAt;
+        $token = new LoginToken([
+            'user_id' => $user->id,
+            'expire_at' => $expireAt,
+        ]);
         $token->save();
 
         $user->token = $token->token;

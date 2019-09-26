@@ -9,8 +9,6 @@ class User extends PublicUser
 
     protected $hidden = ['password'];
 
-    protected $appends = ['is_admin_user', 'is_rest_user'];
-
     public function setPassword(string $password): self
     {
         $this->password = password_hash($password, PASSWORD_BCRYPT);
@@ -21,11 +19,6 @@ class User extends PublicUser
     public function checkPassword(string $password)
     {
         return password_verify($password, $this->password);
-    }
-
-    public function package_groups()
-    {
-        return $this->belongsToMany(PackageGroup::class, UserPackageGroup::class);
     }
 
     public function access_tokens()
