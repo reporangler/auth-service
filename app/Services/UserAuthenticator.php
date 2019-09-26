@@ -58,7 +58,7 @@ class UserAuthenticator
 
             return $data;
         }catch(ValidationException $e){
-            abort(400, 'Headers were invalid');
+            abort(400, 'login headers were not valid');
         }
     }
 
@@ -75,7 +75,7 @@ class UserAuthenticator
 
             return $data['authorization'];
         }catch(ValidationException $e) {
-            abort(400, 'Headers were invalid');
+            abort(400, 'authorization header was not valid');
         }
     }
 
