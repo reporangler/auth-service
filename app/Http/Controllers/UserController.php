@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Model\User;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Laravel\Lumen\Routing\Controller as BaseController;
 
 class UserController extends BaseController
@@ -47,19 +48,19 @@ class UserController extends BaseController
      */
     public function create(Request $request): JsonResponse
     {
-        $request->user()->can('user-create');
-
         $schema = [
-            'username' => 'required|string',
-            'password' => 'required|string|min:8'
+            'username'  => 'required|string',
+            'email'     => 'required|email',
+            'password'  => 'required|string|min:8'
         ];
 
         $data = $this->validate($request,$schema);
 
         // Find a user with this same data
         $result = User::where([
-            'username' => $data['username'],
-            'password' => $data['password']
+            'username'  => $data['username'],
+            'email'     => $data['email'],
+            'password'  => $data['password']
         ])->first();
 
         if(!empty($result)){
@@ -68,8 +69,9 @@ class UserController extends BaseController
 
         // Otherwise, create a new user
         $user = new User();
-        $user->setUsername($data['username']);
-        $user->setPassword($data['password']);
+        $user->username = $data['username'];
+        $user->email    = $data['email'];
+        $user->password = $data['password'];
         $user->save();
 
         return new JsonResponse($user, 200);
@@ -85,20 +87,19 @@ class UserController extends BaseController
         $request->user()->can('user-update');
 
         $schema = [
-            'username' => 'string',
-            'password' => 'string|min:8'
+            'username'  => 'string',
+            'email'     => 'email',
+            'password'  => 'string|min:8',
         ];
 
         $data = $this->validate($request,$schema);
 
         $user = User::findOrFail($id);
 
-        if(array_key_exists('username', $data)){
-            $user->setUsername($data['username']);
-        }
-
-        if(array_key_exists('password', $data)){
-            $user->setPassword($data['password']);
+        foreach($schema as $key => $value){
+            if(array_key_exists($key, $data)){
+                $user->$key = $data[$key];
+            }
         }
 
         $user->save();
