@@ -49,8 +49,8 @@ class Handler extends ExceptionHandler
     public function render($request, Exception $exception)
     {
         $response = [
-            'code' => 500,
-            'exception' => get_class($exception),
+            'code' => $exception->getCode() ?: 500,
+            'exception' => get_class($exception)
         ];
 
         switch(true){
@@ -60,6 +60,11 @@ class Handler extends ExceptionHandler
 
             case $exception instanceof ModelNotFoundException:
                 $response['code'] = 404;
+                break;
+
+            case $exception instanceof ValidationException:
+                $response['code'] = $exception->status;
+                $response['validation'] = $exception->validator->errors();
                 break;
 
             case $exception instanceof QueryException:
