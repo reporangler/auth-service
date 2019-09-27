@@ -1,5 +1,6 @@
 <?php
 
+use App\Model\PackageGroup;
 use Illuminate\Database\Seeder;
 
 class InitialPackageGroups extends Seeder
@@ -11,6 +12,6 @@ class InitialPackageGroups extends Seeder
      */
     public function run()
     {
-
+        PackageGroup::create(['name' => 'public']);
     }
 }

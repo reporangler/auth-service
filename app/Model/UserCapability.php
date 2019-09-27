@@ -6,6 +6,7 @@ class UserCapability extends \RepoRangler\Entity\UserCapability
     protected $table = 'user_capability';
     protected $hidden = ['capability'];
     protected $appends = ['name'];
+    protected $casts = ['constraint' => 'array'];
 
     public function capability()
     {

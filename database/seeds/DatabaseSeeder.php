@@ -13,8 +13,8 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             InitialUserCapabilities::class,
-            InitialAdminUser::class,
             InitialPackageGroups::class,
+            InitialAdminUser::class,
         ]);
     }
 }
