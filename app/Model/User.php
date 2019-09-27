@@ -8,9 +8,7 @@ class User extends \RepoRangler\Entity\User
 {
     protected $table = 'user';
 
-    protected $hidden = ['password'];
-
-    protected $with = ['capability', 'access_tokens'];
+    protected $with = ['access_tokens'];
 
     public function setPasswordAttribute(string $password): void
     {
