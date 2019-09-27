@@ -1,9 +1,7 @@
 <?php
 namespace App\Model;
 
-use Illuminate\Database\Eloquent\Model;
-
-class Capability extends Model
+class Capability extends \RepoRangler\Entity\Capability
 {
     protected $table = 'capability';
 }

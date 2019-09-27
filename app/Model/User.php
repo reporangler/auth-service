@@ -3,9 +3,8 @@ namespace App\Model;
 
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
-use RepoRangler\Entity\PublicUser;
 
-class User extends PublicUser
+class User extends \RepoRangler\Entity\User
 {
     protected $table = 'user';
 
