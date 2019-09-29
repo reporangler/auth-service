@@ -59,16 +59,16 @@ $router->group(['middleware' => ['cors']], function() use ($router) {
         });
 
         $router->group(['prefix' => 'user-package-group'], function() use ($router) {
-            $router->get('/user/{id:[0-9]+}',       'UserPackageGroupController@findByUserId');
-            $router->get('/group/{id:[0-9]+}',      'UserPackageGroupController@findByPackageGroupId');
-            $router->get('/',                       'UserPackageGroupController@getList');
-            $router->post('/',                      'UserPackageGroupController@createMapping');
+            $router->get('/user/{id:[0-9]+}',   'UserPackageGroupController@findByUserId');
+            $router->get('/group/{id:[0-9]+}',  'UserPackageGroupController@findByPackageGroupId');
+            $router->get('/',                   'UserPackageGroupController@getList');
+            $router->post('/',                  'UserPackageGroupController@createMapping');
             $router->delete(
                 '/user/{userId:[0-9]+}/group/{groupId:[0-9]+}',
                 'UserPackageGroupController@deleteMapping'
             );
-            $router->delete('/user/{id:[0-9]+}',    'UserPackageGroupController@deleteByUserId');
-            $router->delete('/group/{id:[0-9]+}',   'UserPackageGroupController@deleteByPackageGroupId');
+            $router->delete('/user/{id:[0-9]+}',    'UserPackageGroupController@deleteMappingByUserId');
+            $router->delete('/group/{id:[0-9]+}',   'UserPackageGroupController@deleteMappingByPackageGroupId');
         });
     });
 });

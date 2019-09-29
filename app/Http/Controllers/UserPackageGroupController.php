@@ -2,26 +2,34 @@
 
 namespace App\Http\Controllers;
 
+use App\Model\PackageGroup;
+use App\Model\User;
 use App\Model\UserPackageGroup;
-use App\Services\DatabaseAuthenticator;
-use App\Services\LDAPAuthenticator;
 use Illuminate\Http\Request;
-use Laravel\Lumen\Routing\Controller as BaseController;
 use Illuminate\Http\JsonResponse;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Laravel\Lumen\Routing\Controller as BaseController;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class UserPackageGroupController extends BaseController
 {
-    public function findByUserId(int $id): JsonResponse
+    public function findByUserId(int $userId): JsonResponse
     {
-        return new JsonResponse(UserPackageGroup::where('user_id', $id)->firstOrFail(),200);
+        $list = UserPackageGroup::findByUserId($userId);
+
+        return new JsonResponse([
+            'count' => count($list),
+            'data' => $list,
+        ]);
     }
 
-    public function findByPackageGroupId(int $id): JsonResponse
+    public function findByPackageGroupId(int $groupId): JsonResponse
     {
-        return new JsonResponse(UserPackageGroup::where('package_group_id', $id)->firstOrFail(),200);
+        $list = UserPackageGroup::findByPackageGroupId($groupId);
+
+        return new JsonResponse([
+            'count' => count($list),
+            'data' => $list,
+        ]);
     }
 
     public function getList(): JsonResponse
@@ -34,7 +42,7 @@ class UserPackageGroupController extends BaseController
         ], count($list) ? 200 : 404);
     }
 
-    public function create(Request $request): JsonResponse
+    public function createMapping(Request $request): JsonResponse
     {
         $request->user()->can('user-package-group-create-mapping');
 
@@ -45,71 +53,77 @@ class UserPackageGroupController extends BaseController
 
         $data = $this->validate($request,$authSchema);
 
-        $userPackageGroup = UserPackageGroup::where([
-            'user_id' => $data['user_id'],
-            'package_group_id' => $data['package_group_id'],
-        ])->first();
+        $user = User::findOrFail($data['user_id']);
+        $packageGroup = PackageGroup::findOrFail($data['package_group_id']);
+
+        $userPackageGroup = UserPackageGroup::whereUserHasPackageGroup($user, $packageGroup);
 
         if($userPackageGroup){
-            throw new UnprocessableEntityHttpException("User Package Group with '{$data['user_id']}' and '{$data['package_group_id']}' already exists");
+            throw new UnprocessableEntityHttpException("User Package Group with '{$user->username} (id: {$user->id})' and '{$packageGroup->name} (id: {$packageGroup->id})' already exists");
         }
 
-        $userPackageGroup = new UserPackageGroup();
-        $userPackageGroup->user_id = $data['user_id'];
-        $userPackageGroup->package_group_id = $data['package_group_id'];
-        $userPackageGroup->save();
+        $userPackageGroup = UserPackageGroup::create($packageGroup, $user);
 
         return new JsonResponse($userPackageGroup, 200);
     }
 
-    public function deleteMapping(int $userId, int $groupId): JsonResponse
+    public function deleteMapping(Request $request, int $userId, int $groupId): JsonResponse
     {
         $request->user()->can('user-package-group-delete-mapping');
 
-        $userPackageGroup = UserPackageGroup::where([
-            'user_id' => $userId,
-            'package_group_id' => $groupId,
-        ]);
+        $user = User::findOrFail($userId);
+        $packageGroup = PackageGroup::findOrFail($groupId);
+
+        $userPackageGroup = UserPackageGroup::whereUserHasPackageGroup($user, $packageGroup);
 
         $deleted = [];
 
-        foreach($userPackageGroup as $u){
-            $deleted[] = $u->toArray();
-            $u->delete();
+        if($userPackageGroup){
+            $deleted[] = $userPackageGroup->toArray();
+            $userPackageGroup->delete();
         }
 
-        return new JsonResponse(['deleted' => $deleted], 200);
+        return new JsonResponse([
+            'count' => count($deleted),
+            'deleted' => $deleted,
+        ], count($deleted) ? 200 : 404);
     }
 
-    public function deleteByUserId(int $id): JsonResponse
+    public function deleteMappingByUserId(Request $request, int $userId): JsonResponse
     {
         $request->user()->can('user-package-group-delete-mapping');
 
-        $userPackageGroup = UserPackageGroup::where('user_id', $id);
+        $list = UserPackageGroup::findByUserId($userId);
 
         $deleted = [];
 
-        foreach($userPackageGroup as $u){
-            $deleted[] = $u->toArray();
-            $u->delete();
+        foreach($list as $userPackageGroup){
+            $deleted[] = $userPackageGroup->toArray();
+            $userPackageGroup->delete();
         }
 
-        return new JsonResponse(['deleted' => $deleted], 200);
+        return new JsonResponse([
+            'count' => count($deleted),
+            'deleted' => $deleted,
+        ], count($deleted) ? 200 : 404);
     }
 
-    public function deleteByPackageGroupId(int $id): JsonResponse
+    public function deleteMappingByPackageGroupId(Request $request, int $groupId): JsonResponse
     {
         $request->user()->can('user-package-group-delete-mapping');
 
-        $userPackageGroup = UserPackageGroup::where('package_group_id', $id);
+        $list = UserPackageGroup::findByPackageGroupId($groupId);
 
         $deleted = [];
 
-        foreach($userPackageGroup as $u){
-            $deleted[] = $u->toArray();
-            $u->delete();
+        foreach($list as $userPackageGroup){
+            $deleted[] = $userPackageGroup->toArray();
+            $userPackageGroup->delete();
         }
 
-        return new JsonResponse(['deleted' => $deleted], 200);
+        return new JsonResponse([
+            'count' => count($deleted),
+            'deleted' => $deleted,
+        ], count($deleted) ? 200 : 404);
     }
 }
