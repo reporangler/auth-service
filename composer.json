@@ -6,15 +6,15 @@
     "type": "project",
     "repositories": [
         {
-            "type": "path",
-            "url": "../lib-reporangler"
+            "type": "git",
+            "url": "https://github.com/reporangler/lib-reporangler"
         }
     ],
     "require": {
         "php": ">=7.1.3",
         "doctrine/dbal": "^2.9",
         "laravel/lumen-framework": "5.8.*",
-        "reporangler/lib-reporangler": "dev-master"
+        "reporangler/lib-reporangler": "^1.1.0"
     },
     "require-dev": {
         "fzaninotto/faker": "^1.4",

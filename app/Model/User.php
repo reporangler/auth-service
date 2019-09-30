@@ -2,7 +2,6 @@
 namespace App\Model;
 
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Collection;
 
 class User extends \RepoRangler\Entity\User
 {
