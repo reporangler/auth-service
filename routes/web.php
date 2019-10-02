@@ -50,12 +50,12 @@ $router->group(['middleware' => ['cors']], function() use ($router) {
         });
 
         $router->group(['prefix' => 'package-group'], function() use ($router) {
-            $router->get('/{name:[a-z]+}',  'PackageGroupController@findByName');
-            $router->get('/{id:[0-9]+}',    'PackageGroupController@findById');
-            $router->get('/',               'PackageGroupController@getList');
-            $router->post('/',              'PackageGroupController@create');
-            $router->put('/',               'PackageGroupController@update');
-            $router->delete('/{id:[0-9]+}', 'PackageGroupController@deleteById');
+            $router->get('/name/{name:[a-z]+}', 'PackageGroupController@findByName');
+            $router->get('/id/{id:[0-9]+}',     'PackageGroupController@findById');
+            $router->get('/',                   'PackageGroupController@getList');
+            $router->post('/',                  'PackageGroupController@create');
+            $router->put('/',                   'PackageGroupController@update');
+            $router->delete('/{id:[0-9]+}',     'PackageGroupController@deleteById');
         });
 
         $router->group(['prefix' => 'user-package-group'], function() use ($router) {
