@@ -111,7 +111,7 @@ class UserController extends BaseController
      * @param int $id
      * @return JsonResponse
      */
-    public function deleteById(int $id): JsonResponse
+    public function deleteById(Request $request, int $id): JsonResponse
     {
         $request->user()->can('user-delete');
 
