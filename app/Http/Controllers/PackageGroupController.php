@@ -75,7 +75,7 @@ class PackageGroupController extends BaseController
         return new JsonResponse($packageGroup, 200);
     }
 
-    public function deleteById(int $id): JsonResponse
+    public function deleteById(Request $request, int $id): JsonResponse
     {
         $request->user()->can('package-group-delete');
 
