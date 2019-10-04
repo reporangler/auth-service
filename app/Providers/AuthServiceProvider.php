@@ -2,14 +2,11 @@
 
 namespace App\Providers;
 
-use App\Model\User;
 use App\Services\UserAuthenticator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
-use RepoRangler\Entity\AdminUser;
-use RepoRangler\Entity\RestUser;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -29,7 +26,6 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        // Login any type of user
         Auth::viaRequest('login', function (Request $request) {
             /** @var UserAuthenticator $userService */
             $userService = app(UserAuthenticator::class);
@@ -41,13 +37,6 @@ class AuthServiceProvider extends ServiceProvider
                 $valid['reporangler-login-username'],
                 $valid['reporangler-login-password']
             );
-        });
-
-        Auth::viaRequest('repo', function (Request $request){
-            /** @var User $user */
-            $user = $request->user('login');
-
-            return false;
         });
 
         Auth::viaRequest('token', function (Request $request) {

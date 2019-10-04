@@ -107,11 +107,6 @@ class UserAuthenticator
         return $user;
     }
 
-    public function loginRepoUser(Request $request)
-    {
-        return false;
-    }
-
     public function checkToken(string $token): User
     {
         $token = str_replace('Bearer','', $token);
@@ -123,6 +118,9 @@ class UserAuthenticator
             'token' => $token
         ])->firstOrFail();
 
-        return $token->user;
+        $user = $token->user;
+        $user->token = $token->token;
+
+        return $user;
     }
 }
