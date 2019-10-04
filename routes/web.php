@@ -45,6 +45,7 @@ $router->group(['middleware' => ['cors']], function() use ($router) {
         });
 
         $router->group(['prefix' => 'access-token'], function() use ($router){
+            $router->get('/{userId:[0-9]+}',                        'AccessTokenController@findByUserId');
             $router->post('/{userId:[0-9]+}',                       'AccessTokenController@add');
             $router->delete('/{userId:[0-9]+}/{tokenId:[0-9]+}',    'AccessTokenController@remove');
         });

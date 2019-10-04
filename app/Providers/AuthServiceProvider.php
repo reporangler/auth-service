@@ -51,8 +51,10 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('user-create',         'App\Policies\UserPolicy@createUser');
         Gate::define('user-update',         'App\Policies\UserPolicy@updateUser');
         Gate::define('user-delete',         'App\Policies\UserPolicy@deleteUser');
-        Gate::define('user-add-token',      'App\Policies\UserPolicy@addToken');
-        Gate::define('user-remove-token',   'App\Policies\UserPolicy@removeToken');
+
+        Gate::define('user-list-token',     'App\Policies\AccessTokenPolicy@listToken');
+        Gate::define('user-add-token',      'App\Policies\AccessTokenPolicy@addToken');
+        Gate::define('user-remove-token',   'App\Policies\AccessTokenPolicy@removeToken');
 
         Gate::define('package-group-create', 'App\Policies\PackageGroupPolicy@createPackageGroup');
         Gate::define('package-group-update', 'App\Policies\PackageGroupPolicy@updatePackageGroup');

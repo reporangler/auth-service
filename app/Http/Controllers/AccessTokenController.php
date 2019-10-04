@@ -10,6 +10,13 @@ use Laravel\Lumen\Routing\Controller as BaseController;
 
 class AccessTokenController extends BaseController
 {
+    public function findByUserId(Request $request, int $userId)
+    {
+        $request->user()->can('user-list-token');
+
+        return new JsonResponse(AccessToken::where('user_id', $userId)->get());
+    }
+
     public function add(Request $request, int $id)
     {
         $request->user()->can('user-add-token');
@@ -31,7 +38,7 @@ class AccessTokenController extends BaseController
         $token->token = $data['token'];
         $token->save();
 
-        return new JsonResponse($token, 200);
+        return new JsonResponse($token);
     }
 
     public function remove(Request $request, int $userId, int $tokenId)
@@ -47,6 +54,6 @@ class AccessTokenController extends BaseController
 
         $accessToken->delete();
 
-        return new JsonResponse(['deleted' => $deleted], 200);
+        return new JsonResponse(['deleted' => $deleted]);
     }
 }
