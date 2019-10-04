@@ -2,16 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\DatabaseAuthenticator;
-use App\Services\LDAPAuthenticator;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Laravel\Lumen\Routing\Controller as BaseController;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class DefaultController extends BaseController
 {
-    public function cors($args)
+    public function cors()
     {
         return $this->healthz();
     }

@@ -3,13 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Model\PackageGroup;
-use App\Services\DatabaseAuthenticator;
-use App\Services\LDAPAuthenticator;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Laravel\Lumen\Routing\Controller as BaseController;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class PackageGroupController extends BaseController

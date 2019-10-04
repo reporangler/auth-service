@@ -4,12 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Model\User;
 use App\Model\AccessToken;
-use App\Services\DatabaseAuthenticator;
-use App\Services\LDAPAuthenticator;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Laravel\Lumen\Routing\Controller as BaseController;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class AccessTokenController extends BaseController
 {
@@ -17,8 +14,10 @@ class AccessTokenController extends BaseController
     {
         $request->user()->can('user-add-token');
 
+        $types = ['github'];
+
         $schema = [
-            'type' => 'required|in:github',
+            'type' => 'required|in:'.implode(',',$types),
             'token' => 'required|string',
         ];
 
@@ -35,7 +34,7 @@ class AccessTokenController extends BaseController
         return new JsonResponse($token, 200);
     }
 
-    public function remove(int $userId, int $tokenId)
+    public function remove(Request $request, int $userId, int $tokenId)
     {
         $request->user()->can('user-del-token');
 
