@@ -34,6 +34,7 @@ class InitialAdminUser extends Seeder
             new UserCapability(['name' => Capability::PACKAGE_GROUP_ADMIN, 'constraint' => ['name' => 'public']]),
             new UserCapability(['name' => Capability::PACKAGE_GROUP_ADMIN, 'constraint' => ['name' => $packageGroup]]),
             new UserCapability(['name' => Capability::PACKAGE_GROUP_ACCESS, 'constraint' => ['name' => $packageGroup]]),
+            new UserCapability(['name' => Capability::REPOSITORY_ADMIN]),
             new UserCapability(['name' => Capability::REPOSITORY_ACCESS, 'constraint' => ['name' => 'php']]),
             new UserCapability(['name' => Capability::REPOSITORY_ACCESS, 'constraint' => ['name' => 'npm']]),
         ]);

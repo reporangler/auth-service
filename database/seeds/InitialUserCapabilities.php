@@ -17,5 +17,6 @@ class InitialUserCapabilities extends Seeder
         Capability::create(['name' => Capability::PACKAGE_GROUP_ADMIN]);
         Capability::create(['name' => Capability::PACKAGE_GROUP_ACCESS]);
         Capability::create(['name' => Capability::REPOSITORY_ACCESS]);
+        Capability::create(['name' => Capability::REPOSITORY_ADMIN]);
     }
 }
