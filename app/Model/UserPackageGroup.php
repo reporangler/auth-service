@@ -41,13 +41,13 @@ class UserPackageGroup
         return $userCapability;
     }
 
-    static public function whereUserHasPackageGroup(User $user, PackageGroup $packageGroup): ?UserCapability
+    static public function whereUserHasPackageGroup(User $user, PackageGroup $packageGroup)
     {
         return UserCapability::whereHas('capability', function (Builder $query){
             $query->whereIn('name', [Capability::PACKAGE_GROUP_ADMIN, Capability::PACKAGE_GROUP_ACCESS]);
         })->where([
             'user_id' => $user->id,
             'constraint->name' => $packageGroup->name,
-        ])->first();
+        ]);
     }
 }

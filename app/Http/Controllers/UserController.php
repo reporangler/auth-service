@@ -146,7 +146,7 @@ class UserController extends BaseController
         $user = User::findOrFail($data['user_id']);
         $packageGroup = PackageGroup::findOrFail($data['package_group_id']);
 
-        $userPackageGroup = UserPackageGroup::whereUserHasPackageGroup($user, $packageGroup);
+        $userPackageGroup = UserPackageGroup::whereUserHasPackageGroup($user, $packageGroup)->first();
 
         if($userPackageGroup){
             throw new UnprocessableEntityHttpException("User Package Group with '{$user->username} (id: {$user->id})' and '{$packageGroup->name} (id: {$packageGroup->id})' already exists");
@@ -171,7 +171,7 @@ class UserController extends BaseController
         $user = User::findOrFail($userId);
         $packageGroup = PackageGroup::findOrFail($groupId);
 
-        $userPackageGroup = UserPackageGroup::whereUserHasPackageGroup($user, $packageGroup);
+        $userPackageGroup = UserPackageGroup::whereUserHasPackageGroup($user, $packageGroup)->first();
 
         $deleted = [];
 
