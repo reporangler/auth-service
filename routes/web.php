@@ -1,8 +1,8 @@
 <?php
-use \Illuminate\Http\JsonResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Laravel\Lumen\Routing\Router;
+use RepoRangler\Entity\User;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,13 +35,15 @@ $router->group(['middleware' => ['cors']], function() use ($router) {
     // All these endpoints require a token to access
     $router->group(['middleware' => 'auth:token'], function() use ($router){
         $router->group(['prefix' => 'user'], function() use ($router){
-            $userRegEx = "[a-z0-9\-\_\@\.]+";
-            $router->get("/username/{name:$userRegEx}", 'UserController@findByUsername');
-            $router->get('/id/{id:[0-9]+}',             'UserController@findById');
+            $router->get('/{name:'.User::PATTERN.'}',   'UserController@findByUsername');
+            $router->get('/{userId:[0-9]+}',            'UserController@findById');
             $router->get('/',                           'UserController@getList');
             $router->post('/',                          'UserController@create');
-            $router->put('/{id:[0-9]+}',                'UserController@update');
-            $router->delete('/{id:[0-9]+}',             'UserController@deleteById');
+            $router->put('/{userId:[0-9]+}',            'UserController@update');
+            $router->delete('/{userId:[0-9]+}',         'UserController@deleteById');
+
+            $router->post('/{userId:[0-9]+}/package-group/',                    'UserController@createMapping');
+            $router->delete('/{userId:[0-9]+}/package-group/{groupId:[0-9]+}',  'UserController@deleteMapping');
         });
 
         $router->group(['prefix' => 'access-token'], function() use ($router){
@@ -52,24 +54,11 @@ $router->group(['middleware' => ['cors']], function() use ($router) {
 
         $router->group(['prefix' => 'package-group'], function() use ($router) {
             $router->get('/name/{name:[a-z\-\.]+}', 'PackageGroupController@findByName');
-            $router->get('/id/{id:[0-9]+}',     'PackageGroupController@findById');
-            $router->get('/',                   'PackageGroupController@getList');
-            $router->post('/',                  'PackageGroupController@create');
-            $router->put('/',                   'PackageGroupController@update');
-            $router->delete('/{id:[0-9]+}',     'PackageGroupController@deleteById');
-        });
-
-        $router->group(['prefix' => 'user-package-group'], function() use ($router) {
-            $router->get('/user/{id:[0-9]+}',   'UserPackageGroupController@findByUserId');
-            $router->get('/group/{id:[0-9]+}',  'UserPackageGroupController@findByPackageGroupId');
-            $router->get('/',                   'UserPackageGroupController@getList');
-            $router->post('/',                  'UserPackageGroupController@createMapping');
-            $router->delete(
-                '/user/{userId:[0-9]+}/group/{groupId:[0-9]+}',
-                'UserPackageGroupController@deleteMapping'
-            );
-            $router->delete('/user/{id:[0-9]+}',    'UserPackageGroupController@deleteMappingByUserId');
-            $router->delete('/group/{id:[0-9]+}',   'UserPackageGroupController@deleteMappingByPackageGroupId');
+            $router->get('/id/{id:[0-9]+}',         'PackageGroupController@findById');
+            $router->get('/',                       'PackageGroupController@getList');
+            $router->post('/',                      'PackageGroupController@create');
+            $router->put('/',                       'PackageGroupController@update');
+            $router->delete('/{id:[0-9]+}',         'PackageGroupController@deleteById');
         });
     });
 });
