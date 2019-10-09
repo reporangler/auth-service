@@ -31,20 +31,25 @@ class UserPackageGroup
         return UserCapability::all();
     }
 
-    static public function create(PackageGroup $packageGroup, User $user): UserCapability
+    static public function create(PackageGroup $packageGroup, User $user, array $constraint = []): UserCapability
     {
         $userCapability = new UserCapability();
         $userCapability->package_group = $packageGroup;
+        $userCapability->constraint = $constraint;
         $userCapability->user()->associate($user);
         $userCapability->save();
 
         return $userCapability;
     }
 
-    static public function whereUserHasPackageGroup(User $user, PackageGroup $packageGroup)
+    static public function whereUserHasPackageGroup(User $user, PackageGroup $packageGroup, string $access = null)
     {
-        return UserCapability::whereHas('capability', function (Builder $query){
-            $query->whereIn('name', [Capability::PACKAGE_GROUP_ADMIN, Capability::PACKAGE_GROUP_ACCESS]);
+        $access = $access === null
+            ? [Capability::PACKAGE_GROUP_ADMIN, Capability::PACKAGE_GROUP_ACCESS]
+            : [$access];
+
+        return UserCapability::whereHas('capability', function (Builder $query) use ($access){
+            $query->whereIn('name', $access);
         })->where([
             'user_id' => $user->id,
             'constraint->name' => $packageGroup->name,
