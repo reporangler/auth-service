@@ -48,19 +48,25 @@ class AuthServiceProvider extends ServiceProvider
             return $userService->checkToken($token);
         });
 
-        Gate::define('user-create',         'App\Policies\UserPolicy@createUser');
-        Gate::define('user-update',         'App\Policies\UserPolicy@updateUser');
-        Gate::define('user-delete',         'App\Policies\UserPolicy@deleteUser');
+        Gate::define('user-create',             'App\Policies\UserPolicy@createUser');
+        Gate::define('user-update',             'App\Policies\UserPolicy@updateUser');
+        Gate::define('user-delete',             'App\Policies\UserPolicy@deleteUser');
 
-        Gate::define('user-list-token',     'App\Policies\AccessTokenPolicy@listToken');
-        Gate::define('user-add-token',      'App\Policies\AccessTokenPolicy@addToken');
-        Gate::define('user-remove-token',   'App\Policies\AccessTokenPolicy@removeToken');
+        Gate::define('user-list-token',         'App\Policies\AccessTokenPolicy@listToken');
+        Gate::define('user-add-token',          'App\Policies\AccessTokenPolicy@addToken');
+        Gate::define('user-remove-token',       'App\Policies\AccessTokenPolicy@removeToken');
 
-        Gate::define('package-group-create', 'App\Policies\PackageGroupPolicy@createPackageGroup');
-        Gate::define('package-group-update', 'App\Policies\PackageGroupPolicy@updatePackageGroup');
-        Gate::define('package-group-delete', 'App\Policies\PackageGroupPolicy@deletePackageGroup');
+        Gate::define('package-group-join',      'App\Policies\PackageGroupPolicy@join');
+        Gate::define('package-group-leave',     'App\Policies\PackageGroupPolicy@leave');
+        Gate::define('package-group-create',    'App\Policies\PackageGroupPolicy@create');
+        Gate::define('package-group-update',    'App\Policies\PackageGroupPolicy@update');
+        Gate::define('package-group-remove',    'App\Policies\PackageGroupPolicy@remove');
+        Gate::define('package-group-protect',   'App\Policies\PackageGroupPolicy@protect');
+        Gate::define('package-group-unprotect', 'App\Policies\PackageGroupPolicy@unprotect');
 
-        Gate::define('user-package-group-create-mapping', 'App\Policies\UserPackageGroupPolicy@createMapping');
-        Gate::define('user-package-group-remove-mapping', 'App\Policies\UserPackageGroupPolicy@removeMapping');
+        Gate::define('repository-join',         'App\Policies\PackageGroupPolicy@join');
+        Gate::define('repository-leave',        'App\Policies\PackageGroupPolicy@leave');
+        Gate::define('repository-protect',      'App\Policies\PackageGroupPolicy@protect');
+        Gate::define('repository-unprotect',    'App\Policies\PackageGroupPolicy@unprotect');
     }
 }
