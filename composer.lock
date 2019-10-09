@@ -2415,11 +2415,11 @@
         },
         {
             "name": "reporangler/lib-reporangler",
-            "version": "1.1.4",
+            "version": "1.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/reporangler/lib-reporangler",
-                "reference": "05dcaf598d46170e850aa005890ec4e0e8a83990"
+                "reference": "60d55585afaf9cb3a541011a7b0d84edf2ce673a"
             },
             "require": {
                 "guzzlehttp/guzzle": "^6.3",
@@ -2450,7 +2450,7 @@
                 "php",
                 "reporangler"
             ],
-            "time": "2019-10-06T19:54:06+00:00"
+            "time": "2019-10-06T23:01:47+00:00"
         },
         {
             "name": "symfony/console",
