@@ -60,5 +60,31 @@ $router->group(['middleware' => ['cors']], function() use ($router) {
             $router->put('/',                       'PackageGroupController@update');
             $router->delete('/{id:[0-9]+}',         'PackageGroupController@deleteById');
         });
+
+        $router->group(['prefix' => 'permission'], function() use ($router){
+            $router->group(['prefix' => 'user'], function() use ($router){
+                $router->group(['prefix' => 'package-group'], function() use ($router){
+                    $router->post('/join', 'CapabilityController@joinPackageGroup');
+                    $router->post('/leave', 'CapabilityController@leavePackageGroup');
+                    $router->post('/request', 'CapabilityController@requestJoinPackageGroup');
+                });
+
+                $router->group(['prefix' => 'repository'], function() use ($router){
+                    $router->post('/join', 'CapabilityController@joinRepository');
+                    $router->post('/leave', 'CapabilityController@leaveRepository');
+                    $router->post('/request', 'CapabilityController@requestJoinRepository');
+                });
+            });
+
+            $router->group(['prefix' => 'package-group'], function() use ($router){
+                $router->post('/protect', 'CapabilityController@protectPackageGroup');
+                $router->post('/unprotect', 'CapabilityController@unprotectPackageGroup');
+            });
+
+            $router->group(['prefix' => 'repository'], function() use ($router){
+                $router->post('/protect', 'CapabilityController@protectRepository');
+                $router->post('/unprotect', 'CapabilityController@unprotectRepository');
+            });
+        });
     });
 });
