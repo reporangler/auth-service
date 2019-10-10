@@ -52,15 +52,6 @@ $router->group(['middleware' => ['cors']], function() use ($router) {
             $router->delete('/{userId:[0-9]+}/{tokenId:[0-9]+}',    'AccessTokenController@remove');
         });
 
-        $router->group(['prefix' => 'package-group'], function() use ($router) {
-            $router->get('/name/{name:[a-z\-\.]+}', 'PackageGroupController@findByName');
-            $router->get('/id/{id:[0-9]+}',         'PackageGroupController@findById');
-            $router->get('/',                       'PackageGroupController@getList');
-            $router->post('/',                      'PackageGroupController@create');
-            $router->put('/',                       'PackageGroupController@update');
-            $router->delete('/{id:[0-9]+}',         'PackageGroupController@deleteById');
-        });
-
         $router->group(['prefix' => 'permission'], function() use ($router){
             $router->group(['prefix' => 'user'], function() use ($router){
                 $router->group(['prefix' => 'package-group'], function() use ($router){

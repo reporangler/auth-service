@@ -17,11 +17,11 @@ class CapabilityController extends BaseController
 {
     public function joinPackageGroup(Request $request)
     {
-        $data = $this->validate($request, [
+        $data = $this->validate($request, $rules=[
             'user_id' => 'required|integer|min:1',
             'package_group_id' => 'required|integer|min:1',
-            'access' => 'boolean',
-            'admin' => 'boolean',
+            'access' => 'required_without:admin|boolean',
+            'admin' => 'required_without:access|boolean',
         ]);
 
         $user = User::findOrFail($data['user_id']);

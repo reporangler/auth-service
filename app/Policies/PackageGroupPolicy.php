@@ -15,24 +15,6 @@ class PackageGroupPolicy extends GlobalPolicy
         return true;
     }
 
-    public function create($user): bool
-    {
-        error_log(__METHOD__);
-        return true;
-    }
-
-    public function update($user): bool
-    {
-        error_log(__METHOD__);
-        return true;
-    }
-
-    public function remove($user): bool
-    {
-        error_log(__METHOD__);
-        return true;
-    }
-
     public function protect($user): bool
     {
         return_log(__METHOD__);
