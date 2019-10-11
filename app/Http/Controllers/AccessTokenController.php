@@ -14,7 +14,12 @@ class AccessTokenController extends BaseController
     {
         $request->user()->can('user-list-token');
 
-        return new JsonResponse(AccessToken::where('user_id', $userId)->get());
+        $list = AccessToken::where('user_id', $userId)->get();
+
+        return new JsonResponse([
+            'count' => count($list),
+            'data' => $list
+        ], count($list) ? 200 : 404);
     }
 
     public function add(Request $request, int $id)
