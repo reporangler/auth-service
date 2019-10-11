@@ -5,18 +5,21 @@ namespace App\Http\Controllers;
 use App\Meta\UserToPackageGroup;
 use App\Meta\UserToRepository;
 use App\Model\Capability;
-use App\Model\PackageGroup;
 use App\Model\User;
 use App\Model\UserCapability;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Laravel\Lumen\Routing\Controller as BaseController;
 use RepoRangler\Entity\Repository;
+use RepoRangler\Services\MetadataClient;
 
 class CapabilityController extends BaseController
 {
-    public function joinPackageGroup(Request $request)
+    public function joinPackageGroup(Request $request, MetadataClient $metadataClient)
     {
+        $user = Auth::guard('token')->user();
+
         $data = $this->validate($request, $rules=[
             'user_id' => 'required|integer|min:1',
             'package_group_id' => 'required|integer|min:1',
@@ -25,7 +28,10 @@ class CapabilityController extends BaseController
         ]);
 
         $user = User::findOrFail($data['user_id']);
-        $packageGroup = PackageGroup::findOrFail($data['package_group_id']);
+        $packageGroup = $metadataClient->getPackageGroupById($user->token, $data['package_group_id']);
+
+        var_dump($packageGroup);
+        die("DEAD DEAD");
 
         $created = [];
         $exists = [];

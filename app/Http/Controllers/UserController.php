@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Meta\UserToPackageGroup;
-use App\Model\PackageGroup;
 use App\Model\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -126,64 +125,5 @@ class UserController extends BaseController
         $user->delete();
 
         return new JsonResponse(['deleted' => $deleted]);
-    }
-
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     * @throws \Illuminate\Validation\ValidationException
-     */
-    public function createPackageGroupMapping(Request $request): JsonResponse
-    {
-        $request->user()->can('user-package-group-create-mapping');
-
-        $authSchema = [
-            'user_id' => 'required|int|min:1',
-            'package_group_id' => 'required|int|min:1',
-        ];
-
-        $data = $this->validate($request,$authSchema);
-
-        $user = User::findOrFail($data['user_id']);
-        $packageGroup = PackageGroup::findOrFail($data['package_group_id']);
-
-        $userPackageGroup = UserToPackageGroup::where($user, $packageGroup)->first();
-
-        if($userPackageGroup){
-            throw new UnprocessableEntityHttpException("User Package Group with '{$user->username} (id: {$user->id})' and '{$packageGroup->name} (id: {$packageGroup->id})' already exists");
-        }
-
-        $userPackageGroup = UserToPackageGroup::create($packageGroup, $user);
-
-        return new JsonResponse($userPackageGroup);
-    }
-
-    /**
-     * @param Request $request
-     * @param int $userId
-     * @param int $groupId
-     * @return JsonResponse
-     * @throws \Exception
-     */
-    public function deletePackageGroupMapping(Request $request, int $userId, int $groupId): JsonResponse
-    {
-        $request->user()->can('user-package-group-delete-mapping');
-
-        $user = User::findOrFail($userId);
-        $packageGroup = PackageGroup::findOrFail($groupId);
-
-        $userPackageGroup = UserToPackageGroup::where($user, $packageGroup)->first();
-
-        $deleted = [];
-
-        if($userPackageGroup){
-            $deleted[] = $userPackageGroup->toArray();
-            $userPackageGroup->delete();
-        }
-
-        return new JsonResponse([
-            'count' => count($deleted),
-            'deleted' => $deleted,
-        ], count($deleted) ? 200 : 404);
     }
 }

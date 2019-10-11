@@ -2,7 +2,6 @@
 namespace App\Meta;
 
 use App\Model\Capability;
-use App\Model\PackageGroup;
 use App\Model\User;
 use App\Model\UserCapability;
 use Illuminate\Database\Eloquent\Builder;
