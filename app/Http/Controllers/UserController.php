@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Meta\UserToPackageGroup;
 use App\Model\PackageGroup;
 use App\Model\User;
-use App\Model\UserPackageGroup;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Laravel\Lumen\Routing\Controller as BaseController;
+use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class UserController extends BaseController
 {
@@ -146,13 +147,13 @@ class UserController extends BaseController
         $user = User::findOrFail($data['user_id']);
         $packageGroup = PackageGroup::findOrFail($data['package_group_id']);
 
-        $userPackageGroup = UserPackageGroup::whereUserHasPackageGroup($user, $packageGroup)->first();
+        $userPackageGroup = UserToPackageGroup::where($user, $packageGroup)->first();
 
         if($userPackageGroup){
             throw new UnprocessableEntityHttpException("User Package Group with '{$user->username} (id: {$user->id})' and '{$packageGroup->name} (id: {$packageGroup->id})' already exists");
         }
 
-        $userPackageGroup = UserPackageGroup::create($packageGroup, $user);
+        $userPackageGroup = UserToPackageGroup::create($packageGroup, $user);
 
         return new JsonResponse($userPackageGroup);
     }
@@ -171,7 +172,7 @@ class UserController extends BaseController
         $user = User::findOrFail($userId);
         $packageGroup = PackageGroup::findOrFail($groupId);
 
-        $userPackageGroup = UserPackageGroup::whereUserHasPackageGroup($user, $packageGroup)->first();
+        $userPackageGroup = UserToPackageGroup::where($user, $packageGroup)->first();
 
         $deleted = [];
 
