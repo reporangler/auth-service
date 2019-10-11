@@ -6,8 +6,6 @@ use Illuminate\Database\Migrations\Migration;
 
 class CreateCapabilityTable extends Migration
 {
-    const TABLE = 'capability';
-
     /**
      * Run the migrations.
      *
@@ -15,7 +13,7 @@ class CreateCapabilityTable extends Migration
      */
     public function up()
     {
-        Schema::create(self::TABLE, function (Blueprint $table) {
+        Schema::create('capability', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name')->unique();
             $table->timestamps();
@@ -29,6 +27,6 @@ class CreateCapabilityTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists(self::TABLE);
+        Schema::dropIfExists('capability');
     }
 }
