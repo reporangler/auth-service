@@ -18,9 +18,9 @@ class CapabilityController extends BaseController
 {
     public function joinPackageGroup(Request $request, MetadataClient $metadataClient)
     {
-        $user = Auth::guard('token')->user();
+        $login = Auth::guard('token')->user();
 
-        $data = $this->validate($request, $rules=[
+        $data = $this->validate($request, [
             'user_id' => 'required|integer|min:1',
             'package_group_id' => 'required|integer|min:1',
             'access' => 'required_without:admin|boolean',
@@ -28,10 +28,7 @@ class CapabilityController extends BaseController
         ]);
 
         $user = User::findOrFail($data['user_id']);
-        $packageGroup = $metadataClient->getPackageGroupById($user->token, $data['package_group_id']);
-
-        var_dump($packageGroup);
-        die("DEAD DEAD");
+        $packageGroup = $metadataClient->getPackageGroupById($login->token, $data['package_group_id']);
 
         $created = [];
         $exists = [];

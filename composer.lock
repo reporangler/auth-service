@@ -1965,16 +1965,16 @@
         },
         {
             "name": "nesbot/carbon",
-            "version": "2.25.1",
+            "version": "2.25.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/briannesbitt/Carbon.git",
-                "reference": "d59c6cea9c4a3547bb6c0dfec451319abdaa4fb1"
+                "reference": "443fe5f1498147e0fbc792142b5dc43e2e8a533f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/d59c6cea9c4a3547bb6c0dfec451319abdaa4fb1",
-                "reference": "d59c6cea9c4a3547bb6c0dfec451319abdaa4fb1",
+                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/443fe5f1498147e0fbc792142b5dc43e2e8a533f",
+                "reference": "443fe5f1498147e0fbc792142b5dc43e2e8a533f",
                 "shasum": ""
             },
             "require": {
@@ -2028,7 +2028,7 @@
                 "datetime",
                 "time"
             ],
-            "time": "2019-10-05T15:52:23+00:00"
+            "time": "2019-10-14T14:18:59+00:00"
         },
         {
             "name": "nikic/fast-route",
@@ -2423,11 +2423,11 @@
         },
         {
             "name": "reporangler/lib-reporangler",
-            "version": "1.1.5",
+            "version": "1.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/reporangler/lib-reporangler",
-                "reference": "60d55585afaf9cb3a541011a7b0d84edf2ce673a"
+                "reference": "fd2e19d5514a806b097b98578a7f816ff11eea17"
             },
             "require": {
                 "guzzlehttp/guzzle": "^6.3",
@@ -2458,7 +2458,7 @@
                 "php",
                 "reporangler"
             ],
-            "time": "2019-10-06T23:01:47+00:00"
+            "time": "2019-10-11T18:54:22+00:00"
         },
         {
             "name": "symfony/console",

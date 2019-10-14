@@ -6,6 +6,7 @@ use App\Model\User;
 use App\Model\UserCapability;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use RepoRangler\Entity\PackageGroup;
 
 class UserToPackageGroup
 {
