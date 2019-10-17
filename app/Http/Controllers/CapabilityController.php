@@ -54,22 +54,26 @@ class CapabilityController extends BaseController
         return new JsonResponse(['created' => $created, 'exists' => $exists]);
     }
 
-    public function leavePackageGroup(Request $request)
+    public function leavePackageGroup(Request $request, MetadataClient $metadataClient)
     {
+        $login = Auth::guard('token')->user();
+
         $data = $this->validate($request, [
             'user_id' => 'required|integer|min:1',
             'package_group_id' => 'required|integer|min:1',
+            'repository_id' => 'required|integer|min:1',
         ]);
 
         $user = User::findOrFail($data['user_id']);
-        $packageGroup = PackageGroup::findOrFail($data['package_group_id']);
+        $packageGroup = $metadataClient->getPackageGroupById($login->token, $data['package_group_id']);
+        $repository = $metadataClient->getRepositoryById($login->token, $data['repository_id']);
 
         $deleted = [];
 
         $tests = [Capability::PACKAGE_GROUP_ACCESS, Capability::PACKAGE_GROUP_ADMIN];
 
         foreach($tests as $permission){
-            $capability = UserToPackageGroup::where($user, $packageGroup, $permission)->first();
+            $capability = UserToPackageGroup::where($user, $packageGroup, $repository, $permission)->first();
             if($capability instanceOf UserCapability) {
                 $deleted[] = $capability->toArray();
                 $capability->delete();
