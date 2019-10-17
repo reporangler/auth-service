@@ -16,7 +16,7 @@ class UserToRepository
             'name' => $cap,
             'user_id' => $user->id,
             'constraint' => [
-                'name' => $repository->name
+                'repository' => $repository->name
             ]
         ]);
         $capability->save();
@@ -34,7 +34,7 @@ class UserToRepository
             $query->whereIn('name', $access);
         })->where([
             'user_id' => $user->id,
-            'constraint->name' => $repository->name,
+            'constraint->repository' => $repository->name,
         ]);
     }
 }
