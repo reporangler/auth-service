@@ -42,7 +42,7 @@ class CapabilityController extends BaseController
             $exists[] = $capability;
         }
 
-        if($data['admin'] === true){
+        if(array_key_exists('admin', $data) && $data['admin'] === true){
             $capability = UserToPackageGroup::where($user, $packageGroup, $repository, Capability::PACKAGE_GROUP_ADMIN)->first();
             if($capability === null){
                 $created[] = UserToPackageGroup::create(Capability::PACKAGE_GROUP_ADMIN, $user, $packageGroup, $repository);
