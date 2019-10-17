@@ -42,11 +42,13 @@ class CapabilityController extends BaseController
             $exists[] = $capability;
         }
 
-        $capability = UserToPackageGroup::where($user, $packageGroup, $repository, Capability::PACKAGE_GROUP_ADMIN)->first();
-        if($capability === null){
-            $created[] = UserToPackageGroup::create(Capability::PACKAGE_GROUP_ADMIN, $user, $packageGroup, $repository);
-        }else{
-            $exists[] = $capability;
+        if($data['admin'] === true){
+            $capability = UserToPackageGroup::where($user, $packageGroup, $repository, Capability::PACKAGE_GROUP_ADMIN)->first();
+            if($capability === null){
+                $created[] = UserToPackageGroup::create(Capability::PACKAGE_GROUP_ADMIN, $user, $packageGroup, $repository);
+            }else{
+                $exists[] = $capability;
+            }
         }
 
         return new JsonResponse(['created' => $created, 'exists' => $exists]);
