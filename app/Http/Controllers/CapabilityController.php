@@ -23,26 +23,28 @@ class CapabilityController extends BaseController
         $data = $this->validate($request, [
             'user_id' => 'required|integer|min:1',
             'package_group_id' => 'required|integer|min:1',
+            'repository_id' => 'required|integer|min:1',
             'access' => 'required_without:admin|boolean',
             'admin' => 'required_without:access|boolean',
         ]);
 
         $user = User::findOrFail($data['user_id']);
         $packageGroup = $metadataClient->getPackageGroupById($login->token, $data['package_group_id']);
+        $repository = $metadataClient->getRepositoryById($login->token, $data['repository_id']);
 
         $created = [];
         $exists = [];
 
-        $capability = UserToPackageGroup::where($user, $packageGroup, Capability::PACKAGE_GROUP_ACCESS)->first();
+        $capability = UserToPackageGroup::where($user, $packageGroup, $repository, Capability::PACKAGE_GROUP_ACCESS)->first();
         if($capability === null){
-            $created[] = UserToPackageGroup::create(Capability::PACKAGE_GROUP_ACCESS, $user, $packageGroup);
+            $created[] = UserToPackageGroup::create(Capability::PACKAGE_GROUP_ACCESS, $user, $packageGroup, $repository);
         }else{
             $exists[] = $capability;
         }
 
-        $capability = UserToPackageGroup::where($user, $packageGroup, Capability::PACKAGE_GROUP_ADMIN)->first();
+        $capability = UserToPackageGroup::where($user, $packageGroup, $repository, Capability::PACKAGE_GROUP_ADMIN)->first();
         if($capability === null){
-            $created[] = UserToPackageGroup::create(Capability::PACKAGE_GROUP_ADMIN, $user, $packageGroup);
+            $created[] = UserToPackageGroup::create(Capability::PACKAGE_GROUP_ADMIN, $user, $packageGroup, $repository);
         }else{
             $exists[] = $capability;
         }

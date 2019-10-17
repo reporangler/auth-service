@@ -7,16 +7,18 @@ use App\Model\UserCapability;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use RepoRangler\Entity\PackageGroup;
+use RepoRangler\Entity\Repository;
 
 class UserToPackageGroup
 {
-    static public function create(string $cap, User $user, PackageGroup $packageGroup): UserCapability
+    static public function create(string $cap, User $user, PackageGroup $packageGroup, Repository $repository): UserCapability
     {
         $capability = new UserCapability([
             'name' => $cap,
             'user_id' => $user->id,
             'constraint' => [
-                'name' => $packageGroup->name
+                'package_group' => $packageGroup->name,
+                'repository' => $repository->name,
             ]
         ]);
         $capability->save();
@@ -24,7 +26,7 @@ class UserToPackageGroup
         return $capability;
     }
 
-    static public function where(User $user, PackageGroup $packageGroup, string $access = null)
+    static public function where(User $user, PackageGroup $packageGroup, Repository $repository, string $access = null)
     {
         $access = $access === null
             ? [Capability::PACKAGE_GROUP_ADMIN, Capability::PACKAGE_GROUP_ACCESS]
@@ -34,7 +36,8 @@ class UserToPackageGroup
             $query->whereIn('name', $access);
         })->where([
             'user_id' => $user->id,
-            'constraint->name' => $packageGroup->name,
+            'constraint->package_group' => $packageGroup->name,
+            'constraint->repository' => $repository->name,
         ]);
     }
 }
