@@ -4,10 +4,16 @@ namespace App\Providers;
 
 use App\Services\DatabaseAuthenticator;
 use App\Services\LDAPAuthenticator;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
+    public function boot()
+    {
+        //Relation::morphMap([]);
+    }
+
     /**
      * Register any application services.
      *
