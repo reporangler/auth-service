@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Meta\UserToPackageGroup;
 use App\Model\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

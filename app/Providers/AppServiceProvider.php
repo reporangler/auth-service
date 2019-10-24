@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Model\User;
 use App\Services\DatabaseAuthenticator;
 use App\Services\LDAPAuthenticator;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -11,7 +12,9 @@ class AppServiceProvider extends ServiceProvider
 {
     public function boot()
     {
-        //Relation::morphMap([]);
+        Relation::morphMap([
+            'user' => User::class,
+        ]);
     }
 
     /**

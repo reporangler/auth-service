@@ -2,6 +2,7 @@
 namespace App\Model;
 
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class User extends \RepoRangler\Entity\User
 {
@@ -24,8 +25,8 @@ class User extends \RepoRangler\Entity\User
         return $this->hasMany(AccessToken::class);
     }
 
-    public function capability(): HasMany
+    public function capability(): MorphMany
     {
-        return $this->hasMany(UserCapability::class);
+        return $this->morphMany(CapabilityMap::class, 'entity');
     }
 }
