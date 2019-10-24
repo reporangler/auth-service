@@ -22,14 +22,14 @@ class RepositoryService
         $this->metadataClient = $client;
     }
 
-    public function get(): Collection
+    public function getById($id): Repository
     {
         return $this->metadataClient->getRepositoryById($id);
     }
 
-    public function getById($id)
+    public function getByName(string $name): Repository
     {
-        return $this->metadataClient->getRepositoryById($id);
+        return $this->metadataClient->getRepositoryByName($name);
     }
 
     public function associateUser(User $user, Repository $repository, bool $admin): CapabilityMap

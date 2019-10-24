@@ -23,14 +23,14 @@ class PackageGroupService
         $this->metadataClient = $metadataClient;
     }
 
-    public function get(): Collection
-    {
-        return $this->metadataClient->getPackageGroupList();
-    }
-
     public function getById($id): PackageGroup
     {
         return $this->metadataClient->getPackageGroupById($id);
+    }
+
+    public function getByName(string $name): PackageGroup
+    {
+        return $this->metadataClient->getPackageGroupByName($name);
     }
 
     public function associateUser(User $user, PackageGroup $packageGroup, Repository $repository, bool $admin): CapabilityMap
