@@ -17,15 +17,22 @@ class CapabilityController extends BaseController
     {
         $data = $this->validate($request, [
             'user_id' => 'required|integer|min:1',
-            'package_group_id' => 'required|integer|min:1',
-            'repository_id' => 'required|integer|min:1',
+            'package_group_id' => 'required_xor:package_group|integer|min:1',
+            'package_group' => 'required_xor:package_group_id|string|min:1',
+            'repository_id' => 'required_xor:repository|integer|min:1',
+            'repository' => 'required_xor:repository_id|string|min:1',
             'admin' => 'boolean',
         ]);
 
         $user = User::findOrFail($data['user_id']);
 
-        $packageGroup = $packageGroupService->getById($data['package_group_id']);
-        $repository = $repositoryService->getById($data['repository_id']);
+        $packageGroup = array_key_exists('package_group_id', $data)
+            ? $packageGroupService->getById($data['package_group_id'])
+            : $packageGroupService->getByName($data['package_group']);
+
+        $repository = array_key_exists('repository_id', $data)
+            ? $repositoryService->getById($data['repository_id'])
+            : $repositoryService->getByName($data['repository']);
 
         $created = [];
         $exists = [];
@@ -48,13 +55,21 @@ class CapabilityController extends BaseController
     {
         $data = $this->validate($request, [
             'user_id' => 'required|integer|min:1',
-            'package_group_id' => 'required|integer|min:1',
-            'repository_id' => 'required|integer|min:1',
+            'package_group_id' => 'required_xor:package_group|integer|min:1',
+            'package_group' => 'required_xor:package_group_id|string|min:1',
+            'repository_id' => 'required_xor:repository|integer|min:1',
+            'repository' => 'required_xor:repository_id|string|min:1',
         ]);
 
         $user = User::findOrFail($data['user_id']);
-        $packageGroup = $packageGroupService->getById($data['package_group_id']);
-        $repository = $repositoryService->getById($data['repository_id']);
+
+        $packageGroup = array_key_exists('package_group_id', $data)
+            ? $packageGroupService->getById($data['package_group_id'])
+            : $packageGroupService->getByName($data['package_group']);
+
+        $repository = array_key_exists('repository_id', $data)
+            ? $repositoryService->getById($data['repository_id'])
+            : $repositoryService->getByName($data['repository']);
 
         $deleted = [];
 
@@ -76,12 +91,16 @@ class CapabilityController extends BaseController
     {
         $data = $this->validate($request, [
             'user_id' => 'required|integer|min:1',
-            'repository_id' => 'required|integer|min:1',
+            'repository_id' => 'required_xor:repository|integer|min:1',
+            'repository' => 'required_xor:repository_id|string|min:1',
             'admin' => 'boolean',
         ]);
 
         $user = User::findOrFail($data['user_id']);
-        $repository = $repositoryService->getById($data['repository_id']);
+
+        $repository = array_key_exists('repository_id', $data)
+            ? $repositoryService->getById($data['repository_id'])
+            : $repositoryService->getByName($data['repository']);
 
         $created = [];
         $exists = [];
@@ -104,11 +123,15 @@ class CapabilityController extends BaseController
     {
         $data = $this->validate($request, [
             'user_id' => 'required|integer|min:1',
-            'repository_id' => 'required|integer|min:1',
+            'repository_id' => 'required_xor:repository|integer|min:1',
+            'repository' => 'required_xor:repository_id|string|min:1',
         ]);
 
         $user = User::findOrFail($data['user_id']);
-        $repository = $repositoryService->getById($data['repository_id']);
+
+        $repository = array_key_exists('repository_id', $data)
+            ? $repositoryService->getById($data['repository_id'])
+            : $repositoryService->getByName($data['repository']);
 
         $deleted = [];
 
