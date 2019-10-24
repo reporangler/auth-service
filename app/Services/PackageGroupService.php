@@ -4,24 +4,36 @@ namespace App\Services;
 use App\Model\User;
 use App\Model\Capability;
 use App\Model\CapabilityMap;
-use RepoRangler\Entity\PackageGroup as PackageGroupEntity;
-use RepoRangler\Entity\Repository as RepositoryEntity;
+use RepoRangler\Entity\PackageGroup;
+use RepoRangler\Entity\Repository;
 use RepoRangler\Services\MetadataClient;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 
-class PackageGroup
+class PackageGroupService
 {
-    static public function findById($id)
-    {
-        $login = Auth::guard('token')->user();
-        $metadataClient = app(MetadataClient::class);
+    /**
+     * @var MetadataClient
+     */
+    private $metadataClient;
 
-        return $metadataClient->getPackageGroupById($login->token, $id);
+    public function __construct(MetadataClient $metadataClient)
+    {
+        $this->metadataClient = $metadataClient;
     }
 
-    static public function associateUser(User $user, PackageGroupEntity $packageGroup, RepositoryEntity $repository, bool $admin): CapabilityMap
+    public function get(): Collection
+    {
+        return $this->metadataClient->getPackageGroupList();
+    }
+
+    public function getById($id): PackageGroup
+    {
+        return $this->metadataClient->getPackageGroupById($id);
+    }
+
+    public function associateUser(User $user, PackageGroup $packageGroup, Repository $repository, bool $admin): CapabilityMap
     {
         return CapabilityMap::create([
             'entity_type' => 'user',
@@ -35,7 +47,7 @@ class PackageGroup
         ]);
     }
 
-    static public function whereUser(User $user, PackageGroupEntity $packageGroup, RepositoryEntity $repository, ?bool $admin = null)
+    public function whereUser(User $user, PackageGroup $packageGroup, Repository $repository, ?bool $admin = null)
     {
         $fields = [
             'entity_type' => 'user',

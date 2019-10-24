@@ -1,26 +1,38 @@
 <?php
-namespace App\Service;
+namespace App\Services;
 
 use App\Model\Capability;
 use App\Model\User;
 use App\Model\CapabilityMap;
-use RepoRangler\Entity\Repository as RepositoryEntity;
+use RepoRangler\Entity\Repository;
 use RepoRangler\Services\MetadataClient;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 
-class Repository
+class RepositoryService
 {
-    static public function findById($id)
-    {
-        $login = Auth::guard('token')->user();
-        $metadataClient = app(MetadataClient::class);
+    /**
+     * @var MetadataClient
+     */
+    private $metadataClient;
 
-        return $metadataClient->getRepositoryById($login->token, $id);
+    public function __construct(MetadataClient $client)
+    {
+        $this->metadataClient = $client;
     }
 
-    static public function associateUser(User $user, RepositoryEntity $repository, bool $admin): CapabilityMap
+    public function get(): Collection
+    {
+        return $this->metadataClient->getRepositoryById($id);
+    }
+
+    public function getById($id)
+    {
+        return $this->metadataClient->getRepositoryById($id);
+    }
+
+    public function associateUser(User $user, Repository $repository, bool $admin): CapabilityMap
     {
         return CapabilityMap::create([
             'entity_type' => 'user',
@@ -33,7 +45,7 @@ class Repository
         ]);
     }
 
-    static public function whereUser(User $user, RepositoryEntity $repository, ?bool $admin = null)
+    public function whereUser(User $user, Repository $repository, ?bool $admin = null)
     {
         $fields = [
             'entity_type' => 'user',

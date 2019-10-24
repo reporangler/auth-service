@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\PackageGroup;
-use App\Services\Repository;
+use App\Services\PackageGroupService;
+use App\Services\RepositoryService;
 use App\Model\Capability;
 use App\Model\User;
 use App\Model\CapabilityMap;
@@ -13,7 +13,7 @@ use Laravel\Lumen\Routing\Controller as BaseController;
 
 class CapabilityController extends BaseController
 {
-    public function joinPackageGroup(Request $request)
+    public function joinPackageGroup(Request $request, PackageGroupService $packageGroupService, RepositoryService $repositoryService)
     {
         $data = $this->validate($request, [
             'user_id' => 'required|integer|min:1',
@@ -23,17 +23,18 @@ class CapabilityController extends BaseController
         ]);
 
         $user = User::findOrFail($data['user_id']);
-        $packageGroup = PackageGroup::findById($data['package_group_id']);
-        $repository = Repository::findById($data['repository_id']);
+
+        $packageGroup = $packageGroupService->getById($data['package_group_id']);
+        $repository = $repositoryService->getById($data['repository_id']);
 
         $created = [];
         $exists = [];
 
         $admin = array_key_exists('admin', $data) && $data['admin'] === true;
 
-        $capability = PackageGroup::whereUser($user, $packageGroup, $repository)->first();
+        $capability = $packageGroupService->whereUser($user, $packageGroup, $repository)->first();
         if($capability === null){
-            $created[] = PackageGroup::associateUser($user, $packageGroup, $repository, $admin);
+            $created[] = $packageGroupService->associateUser($user, $packageGroup, $repository, $admin);
         }else{
             $capability->admin = $admin;
             $capability->save();
@@ -43,7 +44,7 @@ class CapabilityController extends BaseController
         return new JsonResponse(['created' => $created, 'exists' => $exists]);
     }
 
-    public function leavePackageGroup(Request $request)
+    public function leavePackageGroup(Request $request, PackageGroupService $packageGroupService, RepositoryService $repositoryService)
     {
         $data = $this->validate($request, [
             'user_id' => 'required|integer|min:1',
@@ -52,12 +53,12 @@ class CapabilityController extends BaseController
         ]);
 
         $user = User::findOrFail($data['user_id']);
-        $packageGroup = PackageGroup::findById($data['package_group_id']);
-        $repository = Repository::findById($data['repository_id']);
+        $packageGroup = $packageGroupService->getById($data['package_group_id']);
+        $repository = $repositoryService->getById($data['repository_id']);
 
         $deleted = [];
 
-        $capability = PackageGroup::whereUser($user, $packageGroup, $repository)->get();
+        $capability = $packageGroupService->whereUser($user, $packageGroup, $repository)->get();
         if($capability instanceOf CapabilityMap) {
             $deleted[] = $capability->toArray();
             $capability->delete();
@@ -71,7 +72,7 @@ class CapabilityController extends BaseController
         return new JsonResponse(['method' => __METHOD__, 'todo' => 'at the moment only users can have permissions']);
     }
 
-    public function joinRepository(Request $request)
+    public function joinRepository(Request $request, RepositoryService $repositoryService)
     {
         $data = $this->validate($request, [
             'user_id' => 'required|integer|min:1',
@@ -80,16 +81,16 @@ class CapabilityController extends BaseController
         ]);
 
         $user = User::findOrFail($data['user_id']);
-        $repository = Repository::findById($data['repository_id']);
+        $repository = $repositoryService->getById($data['repository_id']);
 
         $created = [];
         $exists = [];
 
         $admin = array_key_exists('admin', $data) && $data['admin'] === true;
 
-        $capability = Repository::whereUser($user, $repository)->first();
+        $capability = $repositoryService->whereUser($user, $repository)->first();
         if($capability === null){
-            $created[] = Repository::associateUser($user, $repository, $admin);
+            $created[] = $repositoryService->associateUser($user, $repository, $admin);
         }else{
             $capability->admin = $admin;
             $capability->save();
@@ -99,7 +100,7 @@ class CapabilityController extends BaseController
         return new JsonResponse(['created' => $created, 'exists' => $exists]);
     }
 
-    public function leaveRepository(Request $request)
+    public function leaveRepository(Request $request, RepositoryService $repositoryService)
     {
         $data = $this->validate($request, [
             'user_id' => 'required|integer|min:1',
@@ -107,11 +108,11 @@ class CapabilityController extends BaseController
         ]);
 
         $user = User::findOrFail($data['user_id']);
-        $repository = Repository::findById($data['repository_id']);
+        $repository = $repositoryService->getById($data['repository_id']);
 
         $deleted = [];
 
-        $capability = Repository::whereUser($user, $repository)->get();
+        $capability = $repositoryService->whereUser($user, $repository)->get();
         if($capability instanceOf CapabilityMap) {
             $deleted[] = $capability->toArray();
             $capability->delete();

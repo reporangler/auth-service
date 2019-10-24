@@ -3,7 +3,7 @@ namespace App\Services;
 
 use App\Model\User;
 
-class DatabaseAuthenticator
+class DatabaseAuthenticatorService
 {
     private function getUserBy(array $condition): User
     {

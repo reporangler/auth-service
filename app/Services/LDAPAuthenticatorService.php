@@ -3,7 +3,7 @@ namespace App\Services;
 
 use App\Model\User;
 
-class LDAPAuthenticator
+class LDAPAuthenticatorService
 {
     private function getUserBy(array $condition): User
     {

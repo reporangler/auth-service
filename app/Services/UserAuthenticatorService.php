@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
-class UserAuthenticator
+class UserAuthenticatorService
 {
     private function flattenHeaders(array $headers)
     {
@@ -82,10 +82,10 @@ class UserAuthenticator
     public function login(string $type, string $username, string $password): User
     {
         if($type === 'database'){
-            $auth = app(DatabaseAuthenticator::class);
+            $auth = app(DatabaseAuthenticatorService::class);
             $user = $auth->login($username, $password);
         }else if($type === 'ldap') {
-            $auth = app(LDAPAuthenticator::class);
+            $auth = app(LDAPAuthenticatorService::class);
             $user = $auth->login($username, $password);
         }else{
             abort(400, 'No Authorization attempt made');

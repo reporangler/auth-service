@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Services\UserAuthenticator;
+use App\Services\UserAuthenticatorService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -27,8 +27,8 @@ class AuthServiceProvider extends ServiceProvider
     public function boot()
     {
         Auth::viaRequest('login', function (Request $request) {
-            /** @var UserAuthenticator $userService */
-            $userService = app(UserAuthenticator::class);
+            /** @var UserAuthenticatorService $userService */
+            $userService = app(UserAuthenticatorService::class);
 
             $valid = $userService->validateLoginHeaders($request);
 
@@ -40,8 +40,8 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         Auth::viaRequest('token', function (Request $request) {
-            /** @var UserAuthenticator $userService */
-            $userService = app(UserAuthenticator::class);
+            /** @var UserAuthenticatorService $userService */
+            $userService = app(UserAuthenticatorService::class);
 
             $token = $userService->validateTokenRequest($request);
 
