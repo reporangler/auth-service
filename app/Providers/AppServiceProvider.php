@@ -9,8 +9,8 @@ use App\Services\PackageGroupService;
 use App\Services\RepositoryService;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
-use RepoRangler\Services\MetadataClient;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,22 +28,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind(DatabaseAuthenticatorService::class, function(){
-            return new DatabaseAuthenticatorService();
-        });
-
-        $this->app->bind(LDAPAuthenticatorService::class, function(){
-            return new LDAPAuthenticatorService();
-        });
-
-        $this->app->bind(PackageGroupService::class, function(){
-            return new PackageGroupService(app(MetadataClient::class));
-        });
-
-        $this->app->bind(RepositoryService::class, function(){
-            return new RepositoryService(app(MetadataClient::class));
-        });
-
         $this->app->bind('user-token', function(){
             return Auth::guard('token')->user()->token;
         });
