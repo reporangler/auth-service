@@ -9,6 +9,7 @@ use App\Model\User;
 use App\Model\CapabilityMap;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Laravel\Lumen\Routing\Controller as BaseController;
 use RepoRangler\Entity\PackageGroup;
 use RepoRangler\Entity\Repository;
@@ -164,6 +165,8 @@ class CapabilityController extends BaseController
 
     public function protectPackageGroup(Request $request)
     {
+        Gate::allows('is-admin');
+
         $packageGroup = $this->validatePackageGroup($request);
         $repository = $this->validateRepository($request);
 
@@ -174,6 +177,8 @@ class CapabilityController extends BaseController
 
     public function unprotectPackageGroup(Request $request)
     {
+        Gate::allows('is-admin');
+
         $packageGroup = $this->validatePackageGroup($request);
         $repository = $this->validateRepository($request);
 
@@ -184,6 +189,8 @@ class CapabilityController extends BaseController
 
     public function protectRepository(Request $request)
     {
+        Gate::allows('is-admin');
+
         $repository = $this->validateRepository($request);
 
         return new JsonResponse([
@@ -193,6 +200,8 @@ class CapabilityController extends BaseController
 
     public function unprotectRepository(Request $request)
     {
+        Gate::allows('is-admin');
+
         $repository = $this->validateRepository($request);
 
         return new JsonResponse([
