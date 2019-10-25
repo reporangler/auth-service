@@ -32,8 +32,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->app->bind('user', function(){
+            return Auth::guard('token')->user();
+        });
+
         $this->app->bind('user-token', function(){
-            return Auth::guard('token')->user()->token;
+            return app('user')->token;
         });
     }
 }
