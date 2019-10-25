@@ -29,4 +29,11 @@ class User extends \RepoRangler\Entity\User
     {
         return $this->morphMany(CapabilityMap::class, 'entity');
     }
+
+    public function scopeAdmin($query)
+    {
+        return $query->whereHas('capability', function($query){
+            $query->adminUser();
+        });
+    }
 }

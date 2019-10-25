@@ -36,4 +36,9 @@ class CapabilityMap extends \RepoRangler\Entity\CapabilityMap
         $constraint['admin'] = $admin;
         $this->constraint = $constraint;
     }
+
+    public function scopeAdminUser($query)
+    {
+        return $query->where('capability_id', Capability::IsAdminUser()->firstOrFail()->id);
+    }
 }
