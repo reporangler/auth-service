@@ -48,22 +48,20 @@ class AuthServiceProvider extends ServiceProvider
             return $userService->checkToken($token);
         });
 
-        Gate::define('user-create',             'App\Policies\UserPolicy@createUser');
-        Gate::define('user-update',             'App\Policies\UserPolicy@updateUser');
-        Gate::define('user-delete',             'App\Policies\UserPolicy@deleteUser');
+        Gate::define('is-admin',            'App\Policies\UserPolicy@isAdmin');
+        Gate::define('is-user',             'App\Policies\UserPolicy@isUser');
+        Gate::define('user-create',         'App\Policies\UserPolicy@createUser');
+        Gate::define('user-update',         'App\Policies\UserPolicy@updateUser');
+        Gate::define('user-delete',         'App\Policies\UserPolicy@deleteUser');
 
-        Gate::define('user-list-token',         'App\Policies\AccessTokenPolicy@listToken');
-        Gate::define('user-add-token',          'App\Policies\AccessTokenPolicy@addToken');
-        Gate::define('user-remove-token',       'App\Policies\AccessTokenPolicy@removeToken');
+        Gate::define('user-list-token',     'App\Policies\AccessTokenPolicy@listToken');
+        Gate::define('user-add-token',      'App\Policies\AccessTokenPolicy@addToken');
+        Gate::define('user-remove-token',   'App\Policies\AccessTokenPolicy@removeToken');
 
-        Gate::define('package-group-join',      'App\Policies\PackageGroupPolicy@join');
-        Gate::define('package-group-leave',     'App\Policies\PackageGroupPolicy@leave');
-        Gate::define('package-group-protect',   'App\Policies\PackageGroupPolicy@protect');
-        Gate::define('package-group-unprotect', 'App\Policies\PackageGroupPolicy@unprotect');
+        Gate::define('package-group-join',  'App\Policies\PackageGroupPolicy@join');
+        Gate::define('package-group-leave', 'App\Policies\PackageGroupPolicy@leave');
 
-        Gate::define('repository-join',         'App\Policies\RepositoryPolicy@join');
-        Gate::define('repository-leave',        'App\Policies\RepositoryPolicy@leave');
-        Gate::define('repository-protect',      'App\Policies\RepositoryPolicy@protect');
-        Gate::define('repository-unprotect',    'App\Policies\RepositoryPolicy@unprotect');
+        Gate::define('repository-join',     'App\Policies\RepositoryPolicy@join');
+        Gate::define('repository-leave',    'App\Policies\RepositoryPolicy@leave');
     }
 }

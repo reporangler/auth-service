@@ -1,7 +1,7 @@
 <?php
 namespace App\Policies;
 
-class GlobalPolicy
+class CommonPolicy
 {
     public function isAdmin($user): bool
     {

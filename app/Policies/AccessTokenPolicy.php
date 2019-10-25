@@ -1,7 +1,7 @@
 <?php
 namespace App\Policies;
 
-class AccessTokenPolicy extends GlobalPolicy
+class AccessTokenPolicy extends CommonPolicy
 {
     public function listToken($user): bool
     {

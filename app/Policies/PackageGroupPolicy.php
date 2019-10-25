@@ -1,27 +1,15 @@
 <?php
 namespace App\Policies;
 
-class PackageGroupPolicy extends GlobalPolicy
+class PackageGroupPolicy extends CommonPolicy
 {
-    public function join($user): bool
+    public function canJoin($user): bool
     {
         return_log(__METHOD__);
         return true;
     }
 
-    public function leave($user): bool
-    {
-        return_log(__METHOD__);
-        return true;
-    }
-
-    public function protect($user): bool
-    {
-        return_log(__METHOD__);
-        return true;
-    }
-
-    public function unprotect($user): bool
+    public function canLeave($user): bool
     {
         return_log(__METHOD__);
         return true;
