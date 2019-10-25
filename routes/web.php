@@ -54,6 +54,9 @@ $router->group(['middleware' => ['cors']], function() use ($router) {
 
         $router->group(['prefix' => 'permission'], function() use ($router){
             $router->group(['prefix' => 'user'], function() use ($router){
+                $router->put('/admin/{userId:[0-9]+}',      'UserController@giveAdmin');
+                $router->delete('/admin/{userId:[0-9]+}',   'UserController@removeAdmin');
+
                 $router->group(['prefix' => 'package-group'], function() use ($router){
                     $router->post('/join', 'CapabilityController@joinPackageGroup');
                     $router->post('/leave', 'CapabilityController@leavePackageGroup');

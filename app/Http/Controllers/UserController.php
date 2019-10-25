@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Model\Capability;
 use App\Model\User;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Laravel\Lumen\Routing\Controller as BaseController;
-use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class UserController extends BaseController
 {
@@ -124,5 +127,44 @@ class UserController extends BaseController
         $user->delete();
 
         return new JsonResponse(['deleted' => $deleted]);
+    }
+
+    public function giveAdmin(Request $request, int $userId): JsonResponse
+    {
+        Gate::allows('is-admin');
+
+        /** @var User $user */
+        $user = User::findOrFail($userId);
+        if($user->hasCapability(Capability::IS_ADMIN_USER)){
+            throw new BadRequestHttpException('This user already has admin permissions');
+        }
+
+        $user->giveAdmin();
+
+        return new JsonResponse($user->refresh(), 201);
+    }
+
+    public function removeAdmin(Request $request, int $userId): JsonResponse
+    {
+        Gate::allows('is-admin');
+
+        // We can't remove admin if the user doesn't have admin permissions
+        try{
+            /** @var User $user */
+            $user = User::admin()->findOrFail($userId);
+        }catch(ModelNotFoundException $e){
+            throw new BadRequestHttpException('This user does not have admin permissions');
+        }
+
+        $list = User::admin();
+
+        // You cannot remove admin permissions from the last admin user
+        if($list->count() > 1) {
+            $user->removeAdmin();
+
+            return new JsonResponse(null, 204);
+        }
+
+        throw new BadRequestHttpException('You cannot delete the last remaining Administration User');
     }
 }

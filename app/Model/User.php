@@ -1,8 +1,10 @@
 <?php
 namespace App\Model;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Support\Collection;
 
 class User extends \RepoRangler\Entity\User
 {
@@ -35,5 +37,24 @@ class User extends \RepoRangler\Entity\User
         return $query->whereHas('capability', function($query){
             $query->adminUser();
         });
+    }
+
+    public function giveAdmin(): CapabilityMap
+    {
+        return CapabilityMap::create([
+            'entity_type' => CapabilityMap::USER,
+            'entity_id' => $this->id,
+            'name' => Capability::IS_ADMIN_USER,
+            'constraint' => [],
+        ]);
+    }
+
+    public function removeAdmin(): void
+    {
+        foreach($this->capability as $cap){
+            if($cap->name === Capability::IS_ADMIN_USER){
+                $cap->delete();
+            }
+        }
     }
 }
