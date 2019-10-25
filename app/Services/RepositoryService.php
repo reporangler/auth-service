@@ -49,7 +49,7 @@ class RepositoryService
     public function protect(Repository $repository)
     {
         return CapabilityMap::create([
-            'entity_type' => 'repository',
+            'entity_type' => CapabilityMap::REPOSITORY,
             'entity_id' => Capability::where('name', Capability::REPOSITORY_ACCESS)->firstOrFail()->id,
             'name' => Capability::REPOSITORY_ACCESS,
             'constraint' => [
@@ -69,8 +69,8 @@ class RepositoryService
     public function whereProtected(Repository $repository)
     {
         $fields = [
-            'entity_type' => 'repository',
-            'entity_id' => Capability::where('name', Capability::REPOSITORY_ACCESS)->firstOrFail()->id,
+            'entity_type' => CapabilityMap::REPOSITORY,
+            'entity_id' => Capability::repository()->id,
             'constraint->repository' => $repository->name,
         ];
 
@@ -82,7 +82,7 @@ class RepositoryService
     public function whereUser(User $user, Repository $repository, ?bool $admin = null)
     {
         $fields = [
-            'entity_type' => 'user',
+            'entity_type' => CapabilityMap::USER,
             'entity_id' => $user->id,
             'constraint->repository' => $repository->name,
         ];

@@ -5,10 +5,14 @@ use Illuminate\Database\Eloquent\Builder;
 
 class CapabilityMap extends \RepoRangler\Entity\CapabilityMap
 {
-    protected $table = 'capability_map';
-    protected $hidden = ['capability', 'entity'];
-    protected $appends = ['name'];
-    protected $casts = ['constraint' => 'array'];
+    protected $table    = 'capability_map';
+    protected $hidden   = ['capability', 'entity'];
+    protected $appends  = ['name'];
+    protected $casts    = ['constraint' => 'array'];
+
+    const USER          = 'user';
+    const PACKAGE_GROUP = 'package-group';
+    const REPOSITORY    = 'repository';
 
     public function capability()
     {

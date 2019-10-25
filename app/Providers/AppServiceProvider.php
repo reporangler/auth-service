@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Model\CapabilityMap;
+use App\Model\Repository;
 use App\Model\User;
 use App\Services\DatabaseAuthenticatorService;
 use App\Services\LDAPAuthenticatorService;
@@ -17,9 +19,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Relation::morphMap([
-            'user' => User::class,
-            'package-group' => Capability::class,
-            'repository' => Capability::class,
+            CapabilityMap::USER             => User::class,
+            CapabilityMap::PACKAGE_GROUP    => Capability::class,
+            CapabilityMap::REPOSITORY       => Capability::class,
         ]);
     }
 

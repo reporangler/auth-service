@@ -36,7 +36,7 @@ class PackageGroupService
     public function associateUser(User $user, PackageGroup $packageGroup, Repository $repository, bool $admin, bool $approved): CapabilityMap
     {
         return CapabilityMap::create([
-            'entity_type' => 'user',
+            'entity_type' => CapabilityMap::USER,
             'entity_id' => $user->id,
             'name' => Capability::PACKAGE_GROUP_ACCESS,
             'constraint' => [
@@ -51,8 +51,8 @@ class PackageGroupService
     public function protect(PackageGroup $packageGroup, Repository $repository)
     {
         return CapabilityMap::create([
-            'entity_type' => 'package-group',
-            'entity_id' => Capability::where('name', Capability::PACKAGE_GROUP_ACCESS)->firstOrFail()->id,
+            'entity_type' => CapabilityMap::PACKAGE_GROUP,
+            'entity_id' => Capability::packageGroup()->id,
             'name' => Capability::PACKAGE_GROUP_ACCESS,
             'constraint' => [
                 'protected' => true,
@@ -72,8 +72,8 @@ class PackageGroupService
     public function whereProtected(PackageGroup $packageGroup, Repository $repository)
     {
         $fields = [
-            'entity_type' => 'package-group',
-            'entity_id' => Capability::where('name', Capability::PACKAGE_GROUP_ACCESS)->firstOrFail()->id,
+            'entity_type' => CapabilityMap::PACKAGE_GROUP,
+            'entity_id' => Capability::packageGroup()->id,
             'constraint->package_group' => $packageGroup->name,
             'constraint->repository' => $repository->name,
         ];
@@ -86,7 +86,7 @@ class PackageGroupService
     public function whereUser(User $user, PackageGroup $packageGroup, Repository $repository, ?bool $admin = null)
     {
         $fields = [
-            'entity_type' => 'user',
+            'entity_type' => CapabilityMap::USER,
             'entity_id' => $user->id,
             'constraint->package_group' => $packageGroup->name,
             'constraint->repository' => $repository->name,
