@@ -20,7 +20,7 @@ class CreateCapabilityMapTable extends Migration
             $table->integer('capability_id');
             $table->foreign('capability_id')->references('id')->on('capability');
             $table->jsonb('constraint')->nullable();
-            $table->unique(['capability_id', 'entity_id', 'constraint']);
+            $table->unique(['entity_type', 'entity_id', 'capability_id', 'constraint']);
             $table->timestamps();
         });
     }

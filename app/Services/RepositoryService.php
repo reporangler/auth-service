@@ -32,7 +32,7 @@ class RepositoryService
         return $this->metadataClient->getRepositoryByName($name);
     }
 
-    public function associateUser(User $user, Repository $repository, bool $admin): CapabilityMap
+    public function associateUser(User $user, Repository $repository, bool $admin, bool $approved): CapabilityMap
     {
         return CapabilityMap::create([
             'entity_type' => 'user',
@@ -41,8 +41,42 @@ class RepositoryService
             'constraint' => [
                 'repository' => $repository->name,
                 'admin' => $admin,
+                'approved' => $approved,
             ]
         ]);
+    }
+
+    public function protect(Repository $repository)
+    {
+        return CapabilityMap::create([
+            'entity_type' => 'repository',
+            'entity_id' => Capability::where('name', Capability::REPOSITORY_ACCESS)->firstOrFail()->id,
+            'name' => Capability::REPOSITORY_ACCESS,
+            'constraint' => [
+                'protected' => true,
+                'repository' => $repository->name,
+            ]
+        ]);
+    }
+
+    public function unprotect(Repository $repository)
+    {
+        $capabilityMap = $this->whereProtected($repository)->firstOrFail();
+
+        return $capabilityMap->delete() === true;
+    }
+
+    public function whereProtected(Repository $repository)
+    {
+        $fields = [
+            'entity_type' => 'repository',
+            'entity_id' => Capability::where('name', Capability::REPOSITORY_ACCESS)->firstOrFail()->id,
+            'constraint->repository' => $repository->name,
+        ];
+
+        return CapabilityMap::whereHas('capability', function (Builder $query){
+            $query->where('name', Capability::REPOSITORY_ACCESS);
+        })->where($fields);
     }
 
     public function whereUser(User $user, Repository $repository, ?bool $admin = null)

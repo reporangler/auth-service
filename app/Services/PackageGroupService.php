@@ -33,7 +33,7 @@ class PackageGroupService
         return $this->metadataClient->getPackageGroupByName($name);
     }
 
-    public function associateUser(User $user, PackageGroup $packageGroup, Repository $repository, bool $admin): CapabilityMap
+    public function associateUser(User $user, PackageGroup $packageGroup, Repository $repository, bool $admin, bool $approved): CapabilityMap
     {
         return CapabilityMap::create([
             'entity_type' => 'user',
@@ -43,8 +43,44 @@ class PackageGroupService
                 'package_group' => $packageGroup->name,
                 'repository' => $repository->name,
                 'admin' => $admin,
+                'approved' => $approved,
             ]
         ]);
+    }
+
+    public function protect(PackageGroup $packageGroup, Repository $repository)
+    {
+        return CapabilityMap::create([
+            'entity_type' => 'package-group',
+            'entity_id' => Capability::where('name', Capability::PACKAGE_GROUP_ACCESS)->firstOrFail()->id,
+            'name' => Capability::PACKAGE_GROUP_ACCESS,
+            'constraint' => [
+                'protected' => true,
+                'package_group' => $packageGroup->name,
+                'repository' => $repository->name,
+            ]
+        ]);
+    }
+
+    public function unprotect(PackageGroup $packageGroup, Repository $repository)
+    {
+        $capabilityMap = $this->whereProtected($packageGroup, $repository)->firstOrFail();
+
+        return $capabilityMap->delete() === true;
+    }
+
+    public function whereProtected(PackageGroup $packageGroup, Repository $repository)
+    {
+        $fields = [
+            'entity_type' => 'package-group',
+            'entity_id' => Capability::where('name', Capability::PACKAGE_GROUP_ACCESS)->firstOrFail()->id,
+            'constraint->package_group' => $packageGroup->name,
+            'constraint->repository' => $repository->name,
+        ];
+
+        return CapabilityMap::whereHas('capability', function (Builder $query){
+            $query->where('name', Capability::PACKAGE_GROUP_ACCESS);
+        })->where($fields);
     }
 
     public function whereUser(User $user, PackageGroup $packageGroup, Repository $repository, ?bool $admin = null)

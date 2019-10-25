@@ -18,6 +18,8 @@ class AppServiceProvider extends ServiceProvider
     {
         Relation::morphMap([
             'user' => User::class,
+            'package-group' => Capability::class,
+            'repository' => Capability::class,
         ]);
     }
 
