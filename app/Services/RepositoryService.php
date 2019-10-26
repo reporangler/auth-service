@@ -50,7 +50,7 @@ class RepositoryService
     {
         return CapabilityMap::create([
             'entity_type' => CapabilityMap::REPOSITORY,
-            'entity_id' => Capability::where('name', Capability::REPOSITORY_ACCESS)->firstOrFail()->id,
+            'entity_id' => Capability::repositoryAccess()->firstOrFail()->id,
             'name' => Capability::REPOSITORY_ACCESS,
             'constraint' => [
                 'protected' => true,
@@ -70,7 +70,7 @@ class RepositoryService
     {
         $fields = [
             'entity_type' => CapabilityMap::REPOSITORY,
-            'entity_id' => Capability::repository()->id,
+            'entity_id' => Capability::repositoryAccess()->firstOrFail()->id,
             'constraint->repository' => $repository->name,
         ];
 

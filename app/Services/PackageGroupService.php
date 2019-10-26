@@ -52,7 +52,7 @@ class PackageGroupService
     {
         return CapabilityMap::create([
             'entity_type' => CapabilityMap::PACKAGE_GROUP,
-            'entity_id' => Capability::packageGroup()->id,
+            'entity_id' => Capability::packageGroupAccess()->firstOrFail()->id,
             'name' => Capability::PACKAGE_GROUP_ACCESS,
             'constraint' => [
                 'protected' => true,
@@ -73,7 +73,7 @@ class PackageGroupService
     {
         $fields = [
             'entity_type' => CapabilityMap::PACKAGE_GROUP,
-            'entity_id' => Capability::packageGroup()->id,
+            'entity_id' => Capability::packageGroupAccess()->firstOrFail()->id,
             'constraint->package_group' => $packageGroup->name,
             'constraint->repository' => $repository->name,
         ];
