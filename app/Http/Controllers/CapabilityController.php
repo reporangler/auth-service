@@ -238,7 +238,7 @@ class CapabilityController extends BaseController
         $protected = true;
 
         try{
-            $protected = !$this->repositoryService->protect($repository);
+            $protected = !$this->repositoryService->unprotect($repository);
         }catch(\PDOException $e){
             if(intval($e->getCode()) === 23505) {
                 $protected = false;
