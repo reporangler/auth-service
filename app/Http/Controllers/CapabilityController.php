@@ -7,6 +7,7 @@ use App\Services\RepositoryService;
 use App\Model\Capability;
 use App\Model\User;
 use App\Model\CapabilityMap;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -170,9 +171,19 @@ class CapabilityController extends BaseController
         $packageGroup = $this->validatePackageGroup($request);
         $repository = $this->validateRepository($request);
 
-        return new JsonResponse([
-            'protected' => $this->packageGroupService->protect($packageGroup, $repository)
-        ]);
+        $protected = false;
+
+        try{
+            $protected = $this->packageGroupService->protect($packageGroup, $repository);
+        }catch(\PDOException $e){
+            if(intval($e->getCode()) === 23505) {
+                $protected = true;
+            }else{
+                throw $e;
+            }
+        }
+
+        return new JsonResponse(['protected' => $protected]);
     }
 
     public function unprotectPackageGroup(Request $request)
@@ -182,9 +193,19 @@ class CapabilityController extends BaseController
         $packageGroup = $this->validatePackageGroup($request);
         $repository = $this->validateRepository($request);
 
-        return new JsonResponse([
-            'protected' => !$this->packageGroupService->unprotect($packageGroup, $repository)
-        ]);
+        $protected = true;
+
+        try{
+            $protected = !$this->packageGroupService->unprotect($packageGroup, $repository);
+        }catch(\PDOException $e){
+            if(intval($e->getCode()) === 23505) {
+                $protected = false;
+            }else{
+                throw $e;
+            }
+        }
+
+        return new JsonResponse(['protected' => $protected]);
     }
 
     public function protectRepository(Request $request)
@@ -193,9 +214,19 @@ class CapabilityController extends BaseController
 
         $repository = $this->validateRepository($request);
 
-        return new JsonResponse([
-            'protected' => $this->repositoryService->protect($repository)
-        ]);
+        $protected = false;
+
+        try{
+            $protected = $this->repositoryService->protect($repository);
+        }catch(\PDOException $e){
+            if(intval($e->getCode()) === 23505) {
+                $protected = true;
+            }else{
+                throw $e;
+            }
+        }
+
+        return new JsonResponse(['protected' => $protected]);
     }
 
     public function unprotectRepository(Request $request)
@@ -204,8 +235,18 @@ class CapabilityController extends BaseController
 
         $repository = $this->validateRepository($request);
 
-        return new JsonResponse([
-            'protected' => !$this->repositoryService->unprotect($repository)
-        ]);
+        $protected = true;
+
+        try{
+            $protected = !$this->repositoryService->protect($repository);
+        }catch(\PDOException $e){
+            if(intval($e->getCode()) === 23505) {
+                $protected = false;
+            }else{
+                throw $e;
+            }
+        }
+
+        return new JsonResponse(['protected' => $protected]);
     }
 }
