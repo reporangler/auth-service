@@ -4,7 +4,6 @@ namespace App\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Support\Collection;
 
 class User extends \RepoRangler\Entity\User
 {
@@ -32,10 +31,17 @@ class User extends \RepoRangler\Entity\User
         return $this->morphMany(CapabilityMap::class, 'entity');
     }
 
-    public function scopeAdmin($query)
+    public function scopeAdmin(Builder $query)
     {
-        return $query->whereHas('capability', function($query){
+        return $query->whereHas('capability', function(Builder $query){
             $query->adminUser();
+        });
+    }
+
+    public function scopePackageGroupAdmin(Builder $query, User $user)
+    {
+        return $query->whereHas('capability', function(Builder $query) use ($user) {
+            $query->packageGroupAdmin($user);
         });
     }
 
