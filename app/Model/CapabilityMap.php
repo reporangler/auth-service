@@ -41,8 +41,18 @@ class CapabilityMap extends \RepoRangler\Entity\CapabilityMap
         $this->constraint = $constraint;
     }
 
-    public function scopeAdminUser($query)
+    public function scopeAdminUser(Builder $query)
     {
         return $query->where('capability_id', Capability::IsAdminUser()->firstOrFail()->id);
+    }
+
+    public function scopePackageGroupAdmin(Builder $query, User $user)
+    {
+        return $query->where([
+            'entity_type' => CapabilityMap::USER,
+            'entity_type' => $user->id,
+            'capability_id' => Capability::packageGroupAccess()->firstOrFail()->id,
+            'constraint->admin' => true,
+        ]);
     }
 }
