@@ -3,18 +3,6 @@ namespace App\Policies;
 
 class RepositoryPolicy
 {
-    public function join($user): bool
-    {
-        return_log(__METHOD__);
-        return true;
-    }
-
-    public function leave($user): bool
-    {
-        return_log(__METHOD__);
-        return true;
-    }
-
     public function protect($user): bool
     {
         return_log(__METHOD__);
