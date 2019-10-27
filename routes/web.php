@@ -54,30 +54,26 @@ $router->group(['middleware' => ['cors']], function() use ($router) {
 
         $router->group(['prefix' => 'permission'], function() use ($router){
             $router->group(['prefix' => 'user'], function() use ($router){
-                $router->put('/admin/{userId:[0-9]+}',      'UserController@giveAdmin');
-                $router->delete('/admin/{userId:[0-9]+}',   'UserController@removeAdmin');
-
-                $router->group(['prefix' => 'package-group'], function() use ($router){
-                    $router->post('/join', 'CapabilityController@joinPackageGroup');
-                    $router->post('/leave', 'CapabilityController@leavePackageGroup');
-                    $router->post('/request', 'CapabilityController@requestJoinPackageGroup');
+                $router->group(['prefix' => 'admin'], function() use ($router){
+                    $router->put('/{userId:[0-9]+}',      'UserController@giveAdmin');
+                    $router->delete('/{userId:[0-9]+}',   'UserController@removeAdmin');
                 });
 
-                $router->group(['prefix' => 'repository'], function() use ($router){
-                    $router->post('/join', 'CapabilityController@joinRepository');
-                    $router->post('/leave', 'CapabilityController@leaveRepository');
-                    $router->post('/request', 'CapabilityController@requestJoinRepository');
+                $router->group(['prefix' => 'package-group'], function() use ($router){
+                    $router->post('/join',          'PackageGroupController@join');
+                    $router->post('/leave',         'PackageGroupController@leave');
                 });
             });
 
             $router->group(['prefix' => 'package-group'], function() use ($router){
-                $router->post('/protect', 'CapabilityController@protectPackageGroup');
-                $router->post('/unprotect', 'CapabilityController@unprotectPackageGroup');
-            });
+                $router->post('/protect',               'PackageGroupController@protect');
+                $router->post('/unprotect',             'PackageGroupController@unprotect');
 
-            $router->group(['prefix' => 'repository'], function() use ($router){
-                $router->post('/protect', 'CapabilityController@protectRepository');
-                $router->post('/unprotect', 'CapabilityController@unprotectRepository');
+                $router->group(['prefix' => 'approve'], function() use ($router){
+                    $router->get('/',               'PackageGroupController@getApprovals');
+                    $router->post('/',              'PackageGroupController@approveRequest');
+                    $router->delete('/{id:[0-9]+}', 'PackageGroupController@rejectRequest');
+                });
             });
         });
     });
