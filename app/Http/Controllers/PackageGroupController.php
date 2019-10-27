@@ -144,7 +144,14 @@ class PackageGroupController extends BaseController
 
     public function approveRequest(Request $request)
     {
-        return new JsonResponse(['method' => __METHOD__, 'todo' => 'not implemented']);
+        $data = $this->validate($request, [
+            'request_id' => 'required|integer|min:1',
+        ]);
+
+        // is the request_id even a valid request in the database
+        // is this user allowed to approve this request
+
+        return new JsonResponse(['method' => __METHOD__, 'data' => $data]);
     }
 
     public function rejectRequest(Request $request)
