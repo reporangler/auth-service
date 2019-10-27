@@ -1,7 +1,7 @@
 <?php
 namespace App\Policies;
 
-class RepositoryPolicy extends CommonPolicy
+class RepositoryPolicy
 {
     public function join($user): bool
     {
