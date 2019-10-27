@@ -2,20 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\PackageGroupService;
-use App\Services\RepositoryService;
-use App\Model\Capability;
 use App\Model\User;
 use App\Model\CapabilityMap;
-use Illuminate\Database\QueryException;
+use App\Services\PackageGroupService;
+use App\Services\RepositoryService;
+use RepoRangler\Entity\PackageGroup;
+use RepoRangler\Entity\Repository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Lumen\Routing\Controller as BaseController;
-use RepoRangler\Entity\PackageGroup;
-use RepoRangler\Entity\Repository;
 
-class CapabilityController extends BaseController
+class PackageGroupController extends BaseController
 {
     /**
      * @var PackageGroupService
@@ -66,7 +64,7 @@ class CapabilityController extends BaseController
             : $this->repositoryService->getByName($data['repository']);
     }
 
-    public function joinPackageGroup(Request $request)
+    public function join(Request $request)
     {
         $data = $this->validate($request, [
             'admin' => 'boolean',
@@ -80,12 +78,23 @@ class CapabilityController extends BaseController
         $exists = [];
 
         $admin = array_key_exists('admin', $data) && $data['admin'] === true;
-        $approved = true;
 
+        // Only let admin users create other admin users
+        if($admin) Gate::allows('is-admin');
+
+        //  Are you already in the group?
         $capability = $this->packageGroupService->whereUser($user, $packageGroup, $repository)->first();
         if($capability === null){
-            $created[] = $this->packageGroupService->associateUser($user, $packageGroup, $repository, $admin, $approved);
+            // Nope, you aren't, but first are you allowed to join the group?
+            if(Gate::allows('package-group-join', [$user, $packageGroup, $repository])){
+                // You can join the group
+                $created[] = $this->packageGroupService->join($user, $packageGroup, $repository, $admin);
+            }else{
+                // No, you have to request to join
+                $created[] = $this->packageGroupService->requestJoin($user, $packageGroup, $repository, $admin);
+            }
         }else{
+            // Yes, you are
             $capability->admin = $admin;
             $capability->save();
             $exists[] = $capability->toArray();
@@ -94,7 +103,7 @@ class CapabilityController extends BaseController
         return new JsonResponse(['created' => $created, 'exists' => $exists]);
     }
 
-    public function leavePackageGroup(Request $request)
+    public function leave(Request $request)
     {
         $user = $this->validateUser($request);
         $packageGroup = $this->validatePackageGroup($request);
@@ -111,60 +120,39 @@ class CapabilityController extends BaseController
         return new JsonResponse(['deleted' => $deleted]);
     }
 
-    public function requestJoinPackageGroup(Request $request)
+    public function getApprovals(Request $request)
     {
-        return new JsonResponse(['method' => __METHOD__, 'todo' => 'at the moment only users can have permissions']);
-    }
+        Gate::allows('is-package-group-admin');
 
-    public function joinRepository(Request $request)
-    {
-        $data = $this->validate($request, [
-            'admin' => 'boolean',
-        ]);
+        $loginUser = $request->user();
 
-        $user = $this->validateUser($request);
-        $repository = $this->validateRepository($request);
+        $list = CapabilityMap::user($loginUser)->packageGroup()->admin()->get();
 
-        $created = [];
-        $exists = [];
+        $approvals = [];
 
-        $admin = array_key_exists('admin', $data) && $data['admin'] === true;
-        $approved = true;
+        foreach($list as $admin){
+            $found = CapabilityMap::user()->packageGroup()->approvals(
+                $admin->constraint['package_group'],
+                $admin->constraint['repository']
+            )->get();
 
-        $capability = $this->repositoryService->whereUser($user, $repository)->first();
-        if($capability === null){
-            $created[] = $this->repositoryService->associateUser($user, $repository, $admin, $approved);
-        }else{
-            $capability->admin = $admin;
-            $capability->save();
-            $exists[] = $capability->toArray();
+            $approvals = collect($found)->merge($approvals);
         }
 
-        return new JsonResponse(['created' => $created, 'exists' => $exists]);
+        return new JsonResponse(['approvals' => $approvals]);
     }
 
-    public function leaveRepository(Request $request)
+    public function approveRequest(Request $request)
     {
-        $user = $this->validateUser($request);
-        $repository = $this->validateRepository($request);
-
-        $deleted = [];
-
-        $capability = $this->repositoryService->whereUser($user, $repository)->get();
-        if($capability instanceOf CapabilityMap) {
-            $deleted[] = $capability->toArray();
-            $capability->delete();
-        }
-
-        return new JsonResponse(['deleted' => $deleted]);
+        return new JsonResponse(['method' => __METHOD__, 'todo' => 'not implemented']);
     }
 
-    public function requestJoinRepository(Request $request)
+    public function rejectRequest(Request $request)
     {
-        return new JsonResponse(['method' => __METHOD__, 'todo' => 'at the moment only users can have permissions']);
+        return new JsonResponse(['method' => __METHOD__, 'todo' => 'not implemented']);
     }
 
-    public function protectPackageGroup(Request $request)
+    public function protect(Request $request)
     {
         Gate::allows('is-admin');
 
@@ -186,7 +174,7 @@ class CapabilityController extends BaseController
         return new JsonResponse(['protected' => $protected]);
     }
 
-    public function unprotectPackageGroup(Request $request)
+    public function unprotect(Request $request)
     {
         Gate::allows('is-admin');
 
@@ -197,48 +185,6 @@ class CapabilityController extends BaseController
 
         try{
             $protected = !$this->packageGroupService->unprotect($packageGroup, $repository);
-        }catch(\PDOException $e){
-            if(intval($e->getCode()) === 23505) {
-                $protected = false;
-            }else{
-                throw $e;
-            }
-        }
-
-        return new JsonResponse(['protected' => $protected]);
-    }
-
-    public function protectRepository(Request $request)
-    {
-        Gate::allows('is-admin');
-
-        $repository = $this->validateRepository($request);
-
-        $protected = false;
-
-        try{
-            $protected = $this->repositoryService->protect($repository);
-        }catch(\PDOException $e){
-            if(intval($e->getCode()) === 23505) {
-                $protected = true;
-            }else{
-                throw $e;
-            }
-        }
-
-        return new JsonResponse(['protected' => $protected]);
-    }
-
-    public function unprotectRepository(Request $request)
-    {
-        Gate::allows('is-admin');
-
-        $repository = $this->validateRepository($request);
-
-        $protected = true;
-
-        try{
-            $protected = !$this->repositoryService->unprotect($repository);
         }catch(\PDOException $e){
             if(intval($e->getCode()) === 23505) {
                 $protected = false;

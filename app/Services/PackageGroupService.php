@@ -8,7 +8,6 @@ use RepoRangler\Entity\PackageGroup;
 use RepoRangler\Entity\Repository;
 use RepoRangler\Services\MetadataClient;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 
 class PackageGroupService
@@ -33,7 +32,7 @@ class PackageGroupService
         return $this->metadataClient->getPackageGroupByName($name);
     }
 
-    public function associateUser(User $user, PackageGroup $packageGroup, Repository $repository, bool $admin, bool $approved): CapabilityMap
+    private function associateUser(User $user, PackageGroup $packageGroup, Repository $repository, bool $admin, bool $approved): CapabilityMap
     {
         return CapabilityMap::create([
             'entity_type' => CapabilityMap::USER,
@@ -48,7 +47,29 @@ class PackageGroupService
         ]);
     }
 
-    public function protect(PackageGroup $packageGroup, Repository $repository)
+    public function requestJoin(User $user, PackageGroup $packageGroup, Repository $repository, bool $admin): CapabilityMap
+    {
+        return $this->associateUser($user, $packageGroup, $repository, $admin, false);
+    }
+
+    public function join(User $user, PackageGroup $packageGroup, Repository $repository, bool $admin): CapabilityMap
+    {
+        return $this->associateUser($user, $packageGroup, $repository, $admin, true);
+    }
+
+    public function isProtected(PackageGroup $packageGroup, Repository $repository): bool
+    {
+        return CapabilityMap::where([
+            'entity_type' => CapabilityMap::PACKAGE_GROUP,
+            'entity_id' => Capability::packageGroupAccess()->firstOrFail()->id,
+            'capability_id' => Capability::packageGroupAccess()->firstOrFail()->id,
+            'constraint->protected' => true,
+            'constraint->package_group' => $packageGroup->name,
+            'constraint->repository' => $repository->name,
+        ])->first() !== null;
+    }
+
+    public function protect(PackageGroup $packageGroup, Repository $repository): CapabilityMap
     {
         return CapabilityMap::create([
             'entity_type' => CapabilityMap::PACKAGE_GROUP,
@@ -62,7 +83,7 @@ class PackageGroupService
         ]);
     }
 
-    public function unprotect(PackageGroup $packageGroup, Repository $repository)
+    public function unprotect(PackageGroup $packageGroup, Repository $repository): bool
     {
         $capabilityMap = $this->whereProtected($packageGroup, $repository)->firstOrFail();
 
