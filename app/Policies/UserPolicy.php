@@ -3,19 +3,14 @@ namespace App\Policies;
 
 use App\Model\Capability;
 use App\Model\User;
-use Illuminate\Auth\Access\AuthorizationException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class UserPolicy
 {
-    public function isAdmin(): bool
+    public function isAdmin(User $user): bool
     {
-        /** @var User $login */
-        $login = app('user');
-
-        if($login->hasCapability(Capability::IS_ADMIN_USER) === false){
-            throw new AccessDeniedHttpException();
+        if($user->is_admin_user === false){
+            throw new AccessDeniedHttpException('Only an administrator can perform this action');
         }
 
         return true;
@@ -24,7 +19,7 @@ class UserPolicy
     public function isUser(User $user): bool
     {
         /** @var User $login */
-        //$login = app('user');
+        $login = app('user');
 
         return $login->id === $user->id;
     }
