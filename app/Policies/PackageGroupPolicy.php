@@ -1,10 +1,9 @@
 <?php
 namespace App\Policies;
 
-use App\Model\CapabilityMap;
 use App\Model\User;
+use App\Model\CapabilityMap;
 use App\Services\PackageGroupService;
-use App\Services\RepositoryService;
 use RepoRangler\Entity\PackageGroup;
 use RepoRangler\Entity\Repository;
 
@@ -15,15 +14,9 @@ class PackageGroupPolicy
      */
     private $packageGroupService;
 
-    /**
-     * @var RepositoryService
-     */
-    private $repositoryService;
-
-    public function __construct(PackageGroupService $packageGroupService, RepositoryService $repositoryService)
+    public function __construct(PackageGroupService $packageGroupService)
     {
         $this->packageGroupService = $packageGroupService;
-        $this->repositoryService = $repositoryService;
     }
 
     public function isAdmin(User $loginUser)

@@ -1,7 +1,6 @@
 <?php
 namespace App\Policies;
 
-use App\Model\Capability;
 use App\Model\User;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
