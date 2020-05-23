@@ -57,11 +57,15 @@ class CapabilityMap extends \RepoRangler\Entity\CapabilityMap
         return $query->where($fields);
     }
 
-    public function scopePackageGroup(Builder $query)
+    public function scopePackageGroup(Builder $query, ?string $packageGroup = null, ?string $repository = null)
     {
-        return $query->where([
-            'capability_id' => Capability::packageGroupAccess()->firstOrFail()->id
-        ]);
+        $fields = ['capability_id' => Capability::packageGroupAccess()->firstOrFail()->id];
+
+        if(!empty($packageGroup)) $fields['constraint->package_group'] = $packageGroup;
+
+        if(!empty($repository)) $fields['constraint->repository'] = $repository;
+
+        return $query->where($fields);
     }
 
     public function scopeAdmin(Builder $query)
@@ -71,11 +75,9 @@ class CapabilityMap extends \RepoRangler\Entity\CapabilityMap
         ]);
     }
 
-    public function scopeApprovals(Builder $query, string $packageGroup, string $repository)
+    public function scopeApprovals(Builder $query)
     {
         return $query->where([
-            'constraint->package_group' => $packageGroup,
-            'constraint->repository' => $repository,
             'constraint->approved' => false,
         ]);
     }

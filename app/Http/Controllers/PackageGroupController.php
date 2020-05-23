@@ -83,8 +83,8 @@ class PackageGroupController extends BaseController
         if($admin) Gate::allows('is-admin');
 
         //  Are you already in the group?
-        $capability = $this->packageGroupService->whereUser($user, $packageGroup, $repository)->first();
-        if($capability === null){
+        $capabilityMap = $this->packageGroupService->whereUser($user, $packageGroup, $repository)->first();
+        if($capabilityMap === null){
             // Nope, you aren't, but first are you allowed to join the group?
             if(Gate::allows('package-group-join', [$user, $packageGroup, $repository])){
                 // You can join the group
@@ -95,9 +95,9 @@ class PackageGroupController extends BaseController
             }
         }else{
             // Yes, you are
-            $capability->admin = $admin;
-            $capability->save();
-            $exists[] = $capability->toArray();
+            $capabilityMap->admin = $admin;
+            $capabilityMap->save();
+            $exists[] = $capabilityMap->toArray();
         }
 
         return new JsonResponse(['created' => $created, 'exists' => $exists]);
@@ -111,10 +111,10 @@ class PackageGroupController extends BaseController
 
         $deleted = [];
 
-        $capability = $this->packageGroupService->whereUser($user, $packageGroup, $repository)->get();
-        if($capability instanceOf CapabilityMap) {
-            $deleted[] = $capability->toArray();
-            $capability->delete();
+        $capabilityMap = $this->packageGroupService->whereUser($user, $packageGroup, $repository)->get();
+        if($capabilityMap instanceOf CapabilityMap) {
+            $deleted[] = $capabilityMap->toArray();
+            $capabilityMap->delete();
         }
 
         return new JsonResponse(['deleted' => $deleted]);
@@ -131,10 +131,10 @@ class PackageGroupController extends BaseController
         $approvals = [];
 
         foreach($list as $admin){
-            $found = CapabilityMap::user()->packageGroup()->approvals(
+            $found = CapabilityMap::user()->packageGroup(
                 $admin->constraint['package_group'],
                 $admin->constraint['repository']
-            )->get();
+            )->approvals()->get();
 
             $approvals = collect($found)->merge($approvals);
         }
@@ -148,15 +148,24 @@ class PackageGroupController extends BaseController
             'request_id' => 'required|integer|min:1',
         ]);
 
-        // is the request_id even a valid request in the database
+        $capabilityMap = CapabilityMap::where('id', $data['request_id'])->user()->packageGroup()->approvals()->firstOrFail();
+
+        Gate::allows('is-package-group-admin', $capabilityMap);
+
+        $capabilityMap
+
         // is this user allowed to approve this request
 
-        return new JsonResponse(['method' => __METHOD__, 'data' => $data]);
+        return new JsonResponse(['method' => __METHOD__, 'cmap' => $cmap]);
     }
 
-    public function rejectRequest(Request $request)
+    public function rejectRequest(Request $request, int $id)
     {
-        return new JsonResponse(['method' => __METHOD__, 'todo' => 'not implemented']);
+        $cmap = CapabilityMap::findOrFail($data['request_id']);
+
+        Gate::allows('is-package-group-admin', $cmap);
+
+        return new JsonResponse(['method' => __METHOD__, 'data' => $data]);
     }
 
     public function protect(Request $request)
