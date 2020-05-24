@@ -15,6 +15,9 @@ use RepoRangler\Entity\User;
 |
 */
 
+// Healthcheck for any monitoring software
+$router->get('/', 'DefaultController@healthz');
+
 $router->group(['middleware' => ['cors']], function() use ($router) {
     // Set the CORS options that we will allow web requests from (This doesn't affect composer/console clients)
     $router->options('{path:.*}', 'DefaultController@cors');
