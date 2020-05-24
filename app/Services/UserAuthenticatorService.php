@@ -112,15 +112,19 @@ class UserAuthenticatorService
         $token = str_replace('Bearer','', $token);
         $token = trim($token);
 
-        $token = LoginToken::with([
-            'user.access_tokens'
-        ])->where([
-            'token' => $token
-        ])->firstOrFail();
+        try{
+            $token = LoginToken::with([
+                'user.access_tokens'
+            ])->where([
+                'token' => $token
+            ])->firstOrFail();
 
-        $user = $token->user;
-        $user->token = $token->token;
+            $user = $token->user;
+            $user->token = $token->token;
 
-        return $user;
+            return $user;
+        }catch(\Exception $e){
+            abort(401, 'Unauthorized');
+        }
     }
 }
