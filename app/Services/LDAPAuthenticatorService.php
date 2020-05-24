@@ -14,6 +14,6 @@ class LDAPAuthenticatorService
     {
         $user = $this->getUserBy(['username' => $username]);
 
-        abort(401, 'LDAP Login is not defined yet');
+        abort(400, 'LDAP Login is not defined yet');
     }
 }

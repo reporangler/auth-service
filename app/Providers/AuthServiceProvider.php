@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Validation\ValidationException;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -30,7 +31,11 @@ class AuthServiceProvider extends ServiceProvider
             /** @var UserAuthenticatorService $userService */
             $userService = app(UserAuthenticatorService::class);
 
-            $valid = $userService->validateLoginHeaders($request);
+            try{
+                $valid = $userService->validateLoginHeaders($request);
+            }catch(ValidationException $e){
+                abort(400, 'login headers were not valid');
+            }
 
             return $userService->login(
                 $valid['reporangler-login-type'],
@@ -43,9 +48,17 @@ class AuthServiceProvider extends ServiceProvider
             /** @var UserAuthenticatorService $userService */
             $userService = app(UserAuthenticatorService::class);
 
-            $token = $userService->validateTokenRequest($request);
+            try {
+                $token = $userService->validateTokenRequest($request);
+            }catch(ValidationException $e) {
+                abort(400, 'authorization header was not valid');
+            }
 
-            return $userService->checkToken($token);
+            try{
+                return $userService->checkToken($token);
+            }catch(\Exception $e){
+                abort(401, 'Unauthorized');
+            }
         });
 
         Gate::define('is-admin',                'App\Policies\UserPolicy@isAdmin');

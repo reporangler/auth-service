@@ -21,6 +21,11 @@ class UserAuthenticatorService
         return $headers;
     }
 
+    /**
+     * @param Request $request
+     * @return array
+     * @throws ValidationException
+     */
     public function validateLoginHeaders(Request $request)
     {
         $headers = $this->flattenHeaders($request->headers->all());
@@ -31,52 +36,44 @@ class UserAuthenticatorService
         // TODO: This could request the metadata service to return a list of registered services?
         $repositoryTypes = ['php'];
 
-        try{
-            $validator = Validator::make($headers, [
-                'reporangler-login-type' => 'string|in:'.implode(',', $loginTypes),
-                'reporangler-login-username' => 'required|string',
-                'reporangler-login-password' => 'required|string',
-                'reporangler-login-repository-type' => 'string|in:'.implode(',', $repositoryTypes),
-            ]);
+        $validator = Validator::make($headers, [
+            'reporangler-login-type' => 'string|in:'.implode(',', $loginTypes),
+            'reporangler-login-username' => 'required|string',
+            'reporangler-login-password' => 'required|string',
+            'reporangler-login-repository-type' => 'string|in:'.implode(',', $repositoryTypes),
+        ]);
 
-            $data = $validator->validate();
+        $data = $validator->validate();
 
-            // We override this because we always want to check the database in this case
-            if($data['reporangler-login-type'] === 'http-basic'){
-                $data['reporangler-login-type'] = 'database';
-            }
-
-            // Default to database logins
-            if(!array_key_exists('reporangler-login-type', $data)){
-                $data['reporangler-login-type'] = 'database';
-            }
-
-            // Default to REST Api User Login
-            if(!array_key_exists('reporangler-login-repository-type', $data)){
-                $data['reporangler-login-repository-type'] = null;
-            }
-
-            return $data;
-        }catch(ValidationException $e){
-            abort(400, 'login headers were not valid');
+        // We override this because we always want to check the database in this case
+        if($data['reporangler-login-type'] === 'http-basic'){
+            $data['reporangler-login-type'] = 'database';
         }
+
+        // Default to database logins
+        if(!array_key_exists('reporangler-login-type', $data)){
+            $data['reporangler-login-type'] = 'database';
+        }
+
+        // Default to REST Api User Login
+        if(!array_key_exists('reporangler-login-repository-type', $data)){
+            $data['reporangler-login-repository-type'] = null;
+        }
+
+        return $data;
     }
 
     public function validateTokenRequest(Request $request)
     {
         $headers = $this->flattenHeaders($request->headers->all());
 
-        try {
-            $validator = Validator::make($headers, [
-                'authorization' => 'required|string'
-            ]);
+        $validator = Validator::make($headers, [
+            'authorization' => 'required|string'
+        ]);
 
-            $data = $validator->validate();
+        $data = $validator->validate();
 
-            return $data['authorization'];
-        }catch(ValidationException $e) {
-            abort(400, 'authorization header was not valid');
-        }
+        return $data['authorization'];
     }
 
     public function login(string $type, string $username, string $password): User
@@ -112,19 +109,15 @@ class UserAuthenticatorService
         $token = str_replace('Bearer','', $token);
         $token = trim($token);
 
-        try{
-            $token = LoginToken::with([
-                'user.access_tokens'
-            ])->where([
-                'token' => $token
-            ])->firstOrFail();
+        $token = LoginToken::with([
+            'user.access_tokens'
+        ])->where([
+            'token' => $token
+        ])->firstOrFail();
 
-            $user = $token->user;
-            $user->token = $token->token;
+        $user = $token->user;
+        $user->token = $token->token;
 
-            return $user;
-        }catch(\Exception $e){
-            abort(401, 'Unauthorized');
-        }
+        return $user;
     }
 }
