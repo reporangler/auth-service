@@ -9,7 +9,7 @@ class LoginToken extends Model
 
     public function __construct(array $attributes = [])
     {
-        $attributes['token'] = sha1(microtime(true));
+        $attributes['token'] = bin2hex(random_bytes(32));
 
         parent::__construct($attributes);
     }
