@@ -10,24 +10,13 @@ use Illuminate\Support\ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     *
-     * @return void
-     */
     public function register()
     {
     }
 
-    /**
-     * Boot the authentication services for the application.
-     *
-     * @return void
-     */
     public function boot()
     {
-        Auth::viaRequest('login', function (Request $request) {
-            /** @var UserAuthenticatorService $userService */
+        Auth::viaRequest('custom-login', function (Request $request) {
             $userService = app(UserAuthenticatorService::class);
 
             $valid = $userService->validateLoginHeaders($request);
@@ -39,13 +28,18 @@ class AuthServiceProvider extends ServiceProvider
             );
         });
 
-        Auth::viaRequest('token', function (Request $request) {
-            /** @var UserAuthenticatorService $userService */
-            $userService = app(UserAuthenticatorService::class);
-
-            $token = $userService->validateTokenRequest($request);
-
-            return $userService->checkToken($token);
+        Auth::viaRequest('custom-token', function (Request $request) {
+            try {
+                $userService = app(UserAuthenticatorService::class);
+                $token = $userService->validateTokenRequest($request);
+                file_put_contents('/tmp/auth-debug.log', "Token extracted: $token\n", FILE_APPEND);
+                $user = $userService->checkToken($token);
+                file_put_contents('/tmp/auth-debug.log', "User found: {$user->username}\n", FILE_APPEND);
+                return $user;
+            } catch (\Throwable $e) {
+                file_put_contents('/tmp/auth-debug.log', "Auth error: " . get_class($e) . ": " . $e->getMessage() . "\n", FILE_APPEND);
+                return null;
+            }
         });
 
         Gate::define('is-admin',                'App\Policies\UserPolicy@isAdmin');
@@ -61,8 +55,5 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('is-package-group-admin',  'App\Policies\PackageGroupPolicy@isAdmin');
         Gate::define('package-group-join',      'App\Policies\PackageGroupPolicy@join');
         Gate::define('package-group-leave',     'App\Policies\PackageGroupPolicy@leave');
-
-        Gate::define('repository-join',         'App\Policies\RepositoryPolicy@join');
-        Gate::define('repository-leave',        'App\Policies\RepositoryPolicy@leave');
     }
 }

@@ -8,6 +8,7 @@ use App\Http\Controllers\PackageGroupController;
 
 Route::options('/{path}', [DefaultController::class, 'cors'])->where('path', '.*');
 
+
 Route::middleware(['cors'])->group(function () {
     // Login endpoints
     Route::middleware(['auth:login'])->group(function () {

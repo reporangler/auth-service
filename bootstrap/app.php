@@ -21,7 +21,6 @@ return Application::configure(basePath: dirname(__DIR__))
         \App\Providers\AppServiceProvider::class,
         \App\Providers\AuthServiceProvider::class,
         \RepoRangler\Providers\AppServiceProvider::class,
-        \RepoRangler\Providers\TokenServiceProvider::class,
     ])
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->render(function (AuthenticationException $e) {

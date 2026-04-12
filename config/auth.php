@@ -6,8 +6,8 @@ return [
     ],
 
     'guards' => [
-        'login'     => ['driver' => 'login'],
-        'repo'      => ['driver' => 'repo'],
-        'token'     => ['driver' => 'token'],
+        'login'     => ['driver' => 'custom-login'],
+        'repo'      => ['driver' => 'custom-repo'],
+        'token'     => ['driver' => 'custom-token'],
     ]
 ];
