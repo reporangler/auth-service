@@ -4,7 +4,7 @@ This docker service will accept headers, authenticate, and return the user data
 
 # Installation
 
-You should be able to resolve `auth.reporangler.develop` locally on your computer. 
+You should be able to resolve `auth.reporangler.localhost` locally on your computer. 
 Maybe you need to edit `/etc/hosts` file or add to dns?
 
 At first I had instructions which let people decide whether you want to run the manual way or the preconfigured way. 
@@ -49,13 +49,13 @@ docker ps
 
 #### 4. Query the container to see what it replies
 ```
-curl -vvv http://auth.reporangler.develop:${port}/healthz
+curl -vvv http://auth.reporangler.localhost:${port}/healthz
 ```
 
 It should output
 ```
 > GET /healthz HTTP/1.1
-> Host: auth.reporangler.develop
+> Host: auth.reporangler.localhost
 > User-Agent: curl/7.54.0
 > Accept: */*
 > 
@@ -67,13 +67,13 @@ It should output
 < X-Powered-By: PHP/7.3.4
 < Cache-Control: no-cache, private
 < Date: Sat, 31 Aug 2019 17:32:06 GMT
-< Access-Control-Allow-Origin: *.reporangler.develop
+< Access-Control-Allow-Origin: *.reporangler.localhost
 < Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS
 < Access-Control-Allow-Credentials: true
 < Access-Control-Allow-Headers: *
 < 
-* Connection #0 to host auth.reporangler.develop left intact
-{"statusCode":200,"service":"http:\/\/auth.reporangler.develop"} 
+* Connection #0 to host auth.reporangler.localhost left intact
+{"statusCode":200,"service":"http:\/\/auth.reporangler.localhost"} 
 ```
 
 # Usage
@@ -81,7 +81,7 @@ It should output
 Right now all the users are faked, but you can test the auth to return users by using the following curl commands.
 
 ```
-curl -H 'Content-Type: application/json' -X POST -d '{"type":"http-basic", "username": "chris", "password": "thomas"}' http://auth.reporangler.develop/user/login
+curl -H 'Content-Type: application/json' -X POST -d '{"type":"http-basic", "username": "chris", "password": "thomas"}' http://auth.reporangler.localhost/user/login
 ```
 
 should return (as long as the faked data is still unchanged):
@@ -91,7 +91,7 @@ should return (as long as the faked data is still unchanged):
 
 a non existence user will do this
 ```
-curl -H 'Content-Type: application/json' -X POST -d '{"type":"http-basic", "username": "hello", "password": "thomas"}' http://auth.reporangler.develop/user/login
+curl -H 'Content-Type: application/json' -X POST -d '{"type":"http-basic", "username": "hello", "password": "thomas"}' http://auth.reporangler.localhost/user/login
 ```
 
 and return:

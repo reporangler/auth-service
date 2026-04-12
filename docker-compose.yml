@@ -1,10 +1,8 @@
-version: "3.4"
-
 networks:
   auth_service:
   repo_rangler_proxy:
-    external:
-      name: repo_rangler_proxy
+    name: repo_rangler_proxy
+    external: true
 
 volumes:
   auth_service:
@@ -12,37 +10,52 @@ volumes:
 services:
   auth_service_nginx:
     container_name: reporangler_auth_service_nginx
-    image: reporangler/auth_service_nginx
     build:
       context: .
       dockerfile: docker/nginx/Dockerfile
     networks:
       - repo_rangler_proxy
       - auth_service
+    volumes:
+      - ./public:/www/public:ro
     environment:
-      - VIRTUAL_HOST=auth.reporangler.develop
+      - VIRTUAL_HOST=auth.reporangler.localhost
+    depends_on:
+      - auth_service_phpfpm
 
   auth_service_phpfpm:
     container_name: reporangler_auth_service_phpfpm
-    image: reporangler/auth_service_phpfpm
     build:
       context: .
       dockerfile: docker/phpfpm/Dockerfile
     networks:
       - auth_service
     volumes:
-      - $PWD:/www
+      - .:/www
+      - ../lib-reporangler:/lib-reporangler:ro
     env_file:
-      - $PWD/.env
+      - .env
+    depends_on:
+      auth_service_postgres:
+        condition: service_healthy
 
   auth_service_postgres:
     container_name: reporangler_auth_service_postgres
-    image: postgres:alpine
+    image: postgres:15-alpine
     ports:
-      - 5430:5432
+      - "5430:5432"
     networks:
       - auth_service
     volumes:
       - auth_service:/var/lib/postgresql/data
     env_file:
-      - $PWD/.env
+      - .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-auth_service}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-passwordshouldbeasecret}
+      POSTGRES_DB: ${POSTGRES_DB:-auth_service}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U auth_service"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
