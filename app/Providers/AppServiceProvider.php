@@ -20,9 +20,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Relation::morphMap([
-            CapabilityMap::USER             => User::class,
-            CapabilityMap::PACKAGE_GROUP    => Capability::class,
-            CapabilityMap::REPOSITORY       => Capability::class,
+            CapabilityMap::USER => User::class,
         ]);
     }
 
@@ -38,7 +36,8 @@ class AppServiceProvider extends ServiceProvider
         });
 
         $this->app->bind('user-token', function(){
-            return app('user')->token;
+            $user = app('user');
+            return $user ? $user->token : null;
         });
     }
 }

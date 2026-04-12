@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
-use Laravel\Lumen\Routing\Controller as BaseController;
+use Illuminate\Routing\Controller as BaseController;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
@@ -58,7 +58,7 @@ class UserController extends BaseController
             'password'  => 'required|string|min:8'
         ];
 
-        $data = $this->validate($request,$schema);
+        $data = $request->validate($schema);
 
         // Find a user with this same data
         $result = User::where([
@@ -89,7 +89,7 @@ class UserController extends BaseController
      */
     public function update(Request $request, int $userId): JsonResponse
     {
-        $request->user()->can('user-update');
+        Gate::authorize('user-update', [$userId]);
 
         $schema = [
             'username'  => 'string',
@@ -97,7 +97,7 @@ class UserController extends BaseController
             'password'  => 'string|min:8',
         ];
 
-        $data = $this->validate($request,$schema);
+        $data = $request->validate($schema);
 
         $user = User::findOrFail($userId);
 
@@ -119,7 +119,7 @@ class UserController extends BaseController
      */
     public function deleteById(Request $request, int $userId): JsonResponse
     {
-        $request->user()->can('user-delete');
+        Gate::authorize('user-delete', [$userId]);
 
         $user = User::findOrFail($userId);
 
@@ -132,7 +132,7 @@ class UserController extends BaseController
 
     public function giveAdmin(Request $request, int $userId): JsonResponse
     {
-        Gate::allows('is-admin');
+        Gate::authorize('is-admin');
 
         /** @var User $user */
         $user = User::findOrFail($userId);
@@ -147,7 +147,7 @@ class UserController extends BaseController
 
     public function removeAdmin(Request $request, int $userId): JsonResponse
     {
-        Gate::allows('is-admin');
+        Gate::authorize('is-admin');
 
         // We can't remove admin if the user doesn't have admin permissions
         try{

@@ -5,8 +5,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class AccessToken extends Model
 {
+    protected $fillable = ['user_id', 'type', 'token'];
+
     public function user()
     {
-        return $this->hasOne(User::class);
+        return $this->belongsTo(User::class);
     }
 }

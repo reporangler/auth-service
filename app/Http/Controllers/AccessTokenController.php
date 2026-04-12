@@ -6,13 +6,14 @@ use App\Model\User;
 use App\Model\AccessToken;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Laravel\Lumen\Routing\Controller as BaseController;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Routing\Controller as BaseController;
 
 class AccessTokenController extends BaseController
 {
     public function findByUserId(Request $request, int $userId)
     {
-        $request->user()->can('user-list-token');
+        Gate::authorize('user-list-token');
 
         $list = AccessToken::where('user_id', $userId)->get();
 
@@ -24,7 +25,7 @@ class AccessTokenController extends BaseController
 
     public function add(Request $request, int $id)
     {
-        $request->user()->can('user-add-token');
+        Gate::authorize('user-add-token');
 
         $types = ['github'];
 
@@ -33,7 +34,7 @@ class AccessTokenController extends BaseController
             'token' => 'required|string',
         ];
 
-        $data = $this->validate($request,$schema);
+        $data = $request->validate($schema);
 
         $user = User::findOrFail($id);
 
@@ -48,7 +49,7 @@ class AccessTokenController extends BaseController
 
     public function remove(Request $request, int $userId, int $tokenId)
     {
-        $request->user()->can('user-del-token');
+        Gate::authorize('user-remove-token');
 
         $accessToken = AccessToken::where([
             'id' => $tokenId,

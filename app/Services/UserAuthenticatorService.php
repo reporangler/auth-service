@@ -118,6 +118,11 @@ class UserAuthenticatorService
             'token' => $token
         ])->firstOrFail();
 
+        if ($token->expire_at && new \DateTime($token->expire_at) < new \DateTime()) {
+            $token->delete();
+            abort(401, 'Token has expired');
+        }
+
         $user = $token->user;
         $user->token = $token->token;
 

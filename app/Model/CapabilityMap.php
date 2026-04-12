@@ -31,7 +31,8 @@ class CapabilityMap extends \RepoRangler\Entity\CapabilityMap
 
     public function getNameAttribute(): string
     {
-        return $this->capability['name'];
+        $capability = $this->getRelationValue('capability');
+        return $capability ? $capability->name : '';
     }
 
     public function setAdminAttribute(bool $admin): void
@@ -43,7 +44,7 @@ class CapabilityMap extends \RepoRangler\Entity\CapabilityMap
 
     public function scopeAdminUser(Builder $query)
     {
-        return $query->where('capability_id', Capability::IsAdminUser()->firstOrFail()->id);
+        return $query->where('capability_id', Capability::isAdminUser()->firstOrFail()->id);
     }
 
     public function scopeUser(Builder $query, ?User $user = null)
@@ -60,7 +61,7 @@ class CapabilityMap extends \RepoRangler\Entity\CapabilityMap
     public function scopePackageGroup(Builder $query)
     {
         return $query->where([
-            'capability_id' => Capability::packageGroupAccess()->firstOrFail()->id
+            'capability_id' => Capability::where('name', \RepoRangler\Entity\Capability::PACKAGE_GROUP_ACCESS)->firstOrFail()->id
         ]);
     }
 

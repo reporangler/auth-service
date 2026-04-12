@@ -11,7 +11,7 @@ use RepoRangler\Entity\Repository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
-use Laravel\Lumen\Routing\Controller as BaseController;
+use Illuminate\Routing\Controller as BaseController;
 
 class PackageGroupController extends BaseController
 {
@@ -33,7 +33,7 @@ class PackageGroupController extends BaseController
 
     private function validateUser(Request $request): User
     {
-        $data = $this->validate($request, [
+        $data = $request->validate([
             'user_id' => 'required|integer|min:1',
         ]);
 
@@ -42,7 +42,7 @@ class PackageGroupController extends BaseController
 
     private function validatePackageGroup(Request $request): PackageGroup
     {
-        $data = $this->validate($request, [
+        $data = $request->validate([
             'package_group_id' => 'required_xor:package_group|integer|min:1',
             'package_group' => 'required_xor:package_group_id|string|min:1',
         ]);
@@ -54,7 +54,7 @@ class PackageGroupController extends BaseController
 
     private function validateRepository(Request $request): Repository
     {
-        $data = $this->validate($request, [
+        $data = $request->validate([
             'repository_id' => 'required_xor:repository|integer|min:1',
             'repository' => 'required_xor:repository_id|string|min:1',
         ]);
@@ -66,7 +66,7 @@ class PackageGroupController extends BaseController
 
     public function join(Request $request)
     {
-        $data = $this->validate($request, [
+        $data = $request->validate([
             'admin' => 'boolean',
         ]);
 
@@ -80,7 +80,7 @@ class PackageGroupController extends BaseController
         $admin = array_key_exists('admin', $data) && $data['admin'] === true;
 
         // Only let admin users create other admin users
-        if($admin) Gate::allows('is-admin');
+        if($admin) Gate::authorize('is-admin');
 
         //  Are you already in the group?
         $capability = $this->packageGroupService->whereUser($user, $packageGroup, $repository)->first();
@@ -122,7 +122,7 @@ class PackageGroupController extends BaseController
 
     public function getApprovals(Request $request)
     {
-        Gate::allows('is-package-group-admin');
+        Gate::authorize('is-package-group-admin');
 
         $loginUser = $request->user();
 
@@ -144,7 +144,7 @@ class PackageGroupController extends BaseController
 
     public function approveRequest(Request $request)
     {
-        $data = $this->validate($request, [
+        $data = $request->validate([
             'request_id' => 'required|integer|min:1',
         ]);
 
@@ -161,7 +161,7 @@ class PackageGroupController extends BaseController
 
     public function protect(Request $request)
     {
-        Gate::allows('is-admin');
+        Gate::authorize('is-admin');
 
         $packageGroup = $this->validatePackageGroup($request);
         $repository = $this->validateRepository($request);
@@ -183,7 +183,7 @@ class PackageGroupController extends BaseController
 
     public function unprotect(Request $request)
     {
-        Gate::allows('is-admin');
+        Gate::authorize('is-admin');
 
         $packageGroup = $this->validatePackageGroup($request);
         $repository = $this->validateRepository($request);

@@ -5,19 +5,19 @@ class AccessTokenPolicy
 {
     public function listToken($user): bool
     {
-        error_log(__METHOD__);
+        // Any authenticated user can list tokens
         return true;
     }
 
     public function addToken($user): bool
     {
-        error_log(__METHOD__);
+        // Any authenticated user can add tokens
         return true;
     }
 
     public function removeToken($user): bool
     {
-        error_log(__METHOD__);
+        // Any authenticated user can remove their tokens
         return true;
     }
 }

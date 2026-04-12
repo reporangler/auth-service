@@ -1,77 +1,55 @@
 <?php
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Laravel\Lumen\Routing\Router;
-use RepoRangler\Entity\User;
 
-/*
-|--------------------------------------------------------------------------
-| Application Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register all of the routes for an application.
-| It is a breeze. Simply tell Lumen the URIs it should respond to
-| and give it the Closure to call when that URI is requested.
-|
-*/
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DefaultController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\AccessTokenController;
+use App\Http\Controllers\PackageGroupController;
 
-$router->group(['middleware' => ['cors']], function() use ($router) {
-    // Set the CORS options that we will allow web requests from (This doesn't affect composer/console clients)
-    $router->options('{path:.*}', 'DefaultController@cors');
+Route::options('/{path}', [DefaultController::class, 'cors'])->where('path', '.*');
 
-    $router->group(['prefix' => 'login'], function() use ($router) {
-        $router->get('/api', ['middleware' => 'auth:login', function(Request $request) {
-            return new JsonResponse($request->user('login'));
-        }]);
-
-        $router->get('/token', ['middleware' => 'auth:token', function(Request $request) {
-            return new JsonResponse($request->user('token'));
-        }]);
+Route::middleware(['cors'])->group(function () {
+    // Login endpoints
+    Route::middleware(['auth:login'])->group(function () {
+        Route::get('/login/api', function (\Illuminate\Http\Request $request) {
+            return response()->json($request->user('login'));
+        });
     });
 
-    // All these endpoints require a token to access
-    $router->group(['middleware' => 'auth:token'], function() use ($router){
-        $router->group(['prefix' => 'user'], function() use ($router){
-            $router->get('/{name:'.User::PATTERN.'}',   'UserController@findByUsername');
-            $router->get('/{userId:[0-9]+}',            'UserController@findById');
-            $router->get('/',                           'UserController@getList');
-            $router->post('/',                          'UserController@create');
-            $router->put('/{userId:[0-9]+}',            'UserController@update');
-            $router->delete('/{userId:[0-9]+}',         'UserController@deleteById');
-
-            $router->post('/{userId:[0-9]+}/package-group/',                    'UserController@createMapping');
-            $router->delete('/{userId:[0-9]+}/package-group/{groupId:[0-9]+}',  'UserController@deleteMapping');
+    Route::middleware(['auth:token'])->group(function () {
+        Route::get('/login/token', function (\Illuminate\Http\Request $request) {
+            return response()->json($request->user('token'));
         });
+    });
 
-        $router->group(['prefix' => 'access-token'], function() use ($router){
-            $router->get('/{userId:[0-9]+}',                        'AccessTokenController@findByUserId');
-            $router->post('/{userId:[0-9]+}',                       'AccessTokenController@add');
-            $router->delete('/{userId:[0-9]+}/{tokenId:[0-9]+}',    'AccessTokenController@remove');
-        });
+    // All authenticated routes
+    Route::middleware(['auth:token'])->group(function () {
+        // User routes
+        Route::get('/user/{name}', [UserController::class, 'findByUsername'])->where('name', '[a-z][a-z0-9\-\.]+');
+        Route::get('/user/{userId}', [UserController::class, 'findById'])->where('userId', '[0-9]+');
+        Route::get('/user', [UserController::class, 'getList']);
+        Route::post('/user', [UserController::class, 'create']);
+        Route::put('/user/{userId}', [UserController::class, 'update'])->where('userId', '[0-9]+');
+        Route::delete('/user/{userId}', [UserController::class, 'deleteById'])->where('userId', '[0-9]+');
+        Route::post('/user/{userId}/package-group', [UserController::class, 'createMapping'])->where('userId', '[0-9]+');
+        Route::delete('/user/{userId}/package-group/{groupId}', [UserController::class, 'deleteMapping'])->where(['userId' => '[0-9]+', 'groupId' => '[0-9]+']);
 
-        $router->group(['prefix' => 'permission'], function() use ($router){
-            $router->group(['prefix' => 'user'], function() use ($router){
-                $router->group(['prefix' => 'admin'], function() use ($router){
-                    $router->put('/{userId:[0-9]+}',      'UserController@giveAdmin');
-                    $router->delete('/{userId:[0-9]+}',   'UserController@removeAdmin');
-                });
+        // Access token routes
+        Route::get('/access-token/{userId}', [AccessTokenController::class, 'findByUserId'])->where('userId', '[0-9]+');
+        Route::post('/access-token/{userId}', [AccessTokenController::class, 'add'])->where('userId', '[0-9]+');
+        Route::delete('/access-token/{userId}/{tokenId}', [AccessTokenController::class, 'remove'])->where(['userId' => '[0-9]+', 'tokenId' => '[0-9]+']);
 
-                $router->group(['prefix' => 'package-group'], function() use ($router){
-                    $router->post('/join',          'PackageGroupController@join');
-                    $router->post('/leave',         'PackageGroupController@leave');
-                });
-            });
+        // Permission routes
+        Route::put('/permission/user/admin/{userId}', [UserController::class, 'giveAdmin'])->where('userId', '[0-9]+');
+        Route::delete('/permission/user/admin/{userId}', [UserController::class, 'removeAdmin'])->where('userId', '[0-9]+');
 
-            $router->group(['prefix' => 'package-group'], function() use ($router){
-                $router->post('/protect',               'PackageGroupController@protect');
-                $router->post('/unprotect',             'PackageGroupController@unprotect');
-
-                $router->group(['prefix' => 'approve'], function() use ($router){
-                    $router->get('/',               'PackageGroupController@getApprovals');
-                    $router->post('/',              'PackageGroupController@approveRequest');
-                    $router->delete('/{id:[0-9]+}', 'PackageGroupController@rejectRequest');
-                });
-            });
-        });
+        // Package group permission routes
+        Route::post('/permission/package-group/join', [PackageGroupController::class, 'join']);
+        Route::post('/permission/package-group/leave', [PackageGroupController::class, 'leave']);
+        Route::post('/permission/package-group/protect', [PackageGroupController::class, 'protect']);
+        Route::post('/permission/package-group/unprotect', [PackageGroupController::class, 'unprotect']);
+        Route::get('/permission/package-group/approve', [PackageGroupController::class, 'getApprovals']);
+        Route::post('/permission/package-group/approve', [PackageGroupController::class, 'approveRequest']);
+        Route::delete('/permission/package-group/approve/{id}', [PackageGroupController::class, 'rejectRequest'])->where('id', '[0-9]+');
     });
 });

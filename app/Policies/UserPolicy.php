@@ -23,27 +23,20 @@ class UserPolicy
         return $login->id === $user->id;
     }
 
-    public function updateUser($user): bool
+    public function createUser($user): bool
     {
-        error_log(__METHOD__);
-        return true;
+        return $user->is_admin_user === true;
     }
 
-    public function deleteUser($user): bool
+    public function updateUser($user, $userId = null): bool
     {
-        error_log(__METHOD__);
-        return true;
+        if ($user->is_admin_user) return true;
+        if ($userId && $user->id == $userId) return true;
+        return false;
     }
 
-    public function addToken($user): bool
+    public function deleteUser($user, $userId = null): bool
     {
-        error_log(__METHOD__);
-        return true;
-    }
-
-    public function removeToken($user): bool
-    {
-        error_log(__METHOD__);
-        return true;
+        return $user->is_admin_user === true;
     }
 }
