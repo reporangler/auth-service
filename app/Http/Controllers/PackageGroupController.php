@@ -111,8 +111,8 @@ class PackageGroupController extends BaseController
 
         $deleted = [];
 
-        $capability = $this->packageGroupService->whereUser($user, $packageGroup, $repository)->get();
-        if($capability instanceOf CapabilityMap) {
+        $capability = $this->packageGroupService->whereUser($user, $packageGroup, $repository)->first();
+        if($capability instanceof CapabilityMap) {
             $deleted[] = $capability->toArray();
             $capability->delete();
         }

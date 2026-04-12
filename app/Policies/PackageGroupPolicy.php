@@ -6,6 +6,7 @@ use App\Model\CapabilityMap;
 use App\Services\PackageGroupService;
 use RepoRangler\Entity\PackageGroup;
 use RepoRangler\Entity\Repository;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class PackageGroupPolicy
 {
@@ -45,7 +46,7 @@ class PackageGroupPolicy
 
     public function leave($user): bool
     {
-        return_log(__METHOD__);
+        error_log(__METHOD__);
         return true;
     }
 }

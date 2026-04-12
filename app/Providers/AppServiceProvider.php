@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Model\Capability;
 use App\Model\CapabilityMap;
 use App\Model\Repository;
 use App\Model\User;

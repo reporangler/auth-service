@@ -3,6 +3,7 @@
 use App\Services\RepositoryService;
 use App\Services\PackageGroupService;
 use App\Model\Capability;
+use App\Model\CapabilityMap;
 use App\Model\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;

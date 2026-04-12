@@ -35,7 +35,7 @@ class AccessTokenController extends BaseController
 
         $data = $this->validate($request,$schema);
 
-        $user = User::find($id)->firstOrFail();
+        $user = User::findOrFail($id);
 
         $token = new AccessToken();
         $token->user_id = $user->id;
